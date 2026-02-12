@@ -11,8 +11,8 @@
     <nav class="px-3">
         <p>Full-Stack App Genegobis</p>
         <ul class="nav-list">
-            <li onclick="location.hash='#/login-page'">Login</li>
-            <li onclick="location.hash='#/register-page'">Register</li>
+            <li onclick="navigateTo('#/login')">Login</li>
+            <li onclick="navigateTo('#/register')">Register</li>
         </ul>
     </nav>
     <main>
@@ -55,7 +55,7 @@
                 </label>
 
                 <div class="buttons-div">
-                    <button type="button" onclick="location.hash = '#/verify-email-page'">Sign Up</button>
+                    <button type="button" onclick="navigateTo('#/verify-email')">Sign Up</button>
                     <button>Cancel</button>
                 </div>
             </form>
@@ -103,7 +103,7 @@
         </section>
 
         <section id="employees-page" class="page">
-            <div>
+            <div class="page-header">
                 <h1>Employees</h1>
                 <button>+ Add Employee</button>
             </div>

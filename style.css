@@ -5,7 +5,6 @@
 }
 
 
-
 body{
     width: 100%;
 }
@@ -84,6 +83,16 @@ section{
     width: 100%;
     max-width: 800px;
     padding: 1rem;
+}
+
+.page-header{
+    display: flex;
+    justify-content: space-between;
+}
+
+table{
+    width: 100%;
+    margin-bottom: 1rem;
 }
 
 

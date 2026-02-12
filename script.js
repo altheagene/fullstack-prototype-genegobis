@@ -16,16 +16,31 @@ let currentUser = null;
 let currentPage = homePage;
 
 function navigateTo(hash){
-    currentPage.classList.remove('active')
+    window.location.hash = hash
+    // currentPage.classList.remove('active')
 
-    switch(hash){
-        case '#/register-page' : currentPage = registerPage; break;
-        case '#/login-page':   currentPage = loginPage; break;
-        case '#/verify-email-page' : currentPage = verifyEmailPage; break;
-        case '#/profile-page' : currentPage = profilePage; break;
-    }   
-    console.log(currentPage)
-    currentPage.classList.add('active');
+    // switch(hash){
+    //     case '#/register-page' : currentPage = registerPage; break;
+    //     case '#/login-page':   currentPage = loginPage; break;
+    //     case '#/verify-email-page' : currentPage = verifyEmailPage; break;
+    //     case '#/profile-page' : currentPage = profilePage; break;
+    //     case '#/employees-page' : currentPage = employeesPage; break;
+    // }   
+    // console.log(currentPage)
+    // currentPage.classList.add('active');
 }
 
-window.addEventListener("hashchange", () => {navigateTo(window.location.hash);});
+function handleRouting(){
+    const hash = window.location.hash;
+    currentPage.classList.toggle('active')
+    switch (hash){
+        case '#/login': currentPage = loginPage; break;
+        case '#/register' : currentPage = registerPage; break;
+        case '#/verify-email' : currentPage = verifyEmailPage; break;
+        case '#/profile-page' : currentPage = profilePage; break;
+    }
+
+    currentPage.classList.toggle('active')
+}
+
+window.addEventListener("hashchange", handleRouting);
