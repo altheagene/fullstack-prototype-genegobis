@@ -7,8 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <title>Full-Stack App (Student Build)</title>
 </head>
-<body>
-    <nav>
+<body class="not-authenticated">
+    <nav class="px-3">
         <p>Full-Stack App Genegobis</p>
         <ul class="nav-list">
             <li>Login</li>
@@ -16,7 +16,7 @@
         </ul>
     </nav>
     <main>
-        <section id="home-page" class="page">
+        <section id="home-page" class="page active">
             <h1>Welcome to Full-Stack App</h1>
             <p>A static prototype before backend integration. Simualtes:</p>
             <ul>
@@ -33,7 +33,7 @@
             <button id="get-started-btn">Get Started</button>
         </section>
 
-        <section id="register-page">
+        <section id="register-page" class="page">
             <h1>Register Account</h1>
             <form action="post">
                 <label for="">First name
@@ -59,7 +59,7 @@
             </form>
         </section>
 
-        <section id="verify-email-page">
+        <section id="verify-email-page" class="page">
             <h1>Verify Your Email</h1>
             <div>
                 <p>A verification link has been sent to</p>
@@ -71,7 +71,7 @@
             </div>
         </section>
 
-        <section id="login-page">
+        <section id="login-page" class="page">
             <h1>Login</h1>
             <form action="">
                 <label for="email">Email
@@ -88,7 +88,7 @@
             </form>
         </section>
 
-        <section id="profile-page">
+        <section id="profile-page" class="page">
             <h1>My Profile</h1>
             <div>
                 <h2>Admin User</h2>
@@ -100,7 +100,7 @@
             </div>
         </section>
 
-        <section id="employees-page">
+        <section id="employees-page" class="page">
             <div>
                 <h1>Employees</h1>
                 <button>+ Add Employee</button>
@@ -144,7 +144,7 @@
             </form>
         </section>
 
-        <section id="departments-page">
+        <section id="departments-page" class="page">
             <div>
                 <h1>Departments</h1>
                 <button>+ Add Department</button>
@@ -159,7 +159,7 @@
             </table>
         </section>
 
-        <section id="accounts-page">
+        <section id="accounts-page" class="page">
             <div>
                 <h1>Accounts</h1>
                 <button>+ Add Account</button>
@@ -207,7 +207,7 @@
             </form>
         </section>
 
-        <section>
+        <section id="requests-page" class="page">
             <div>
                 <h1>My Requests</h1>
                 <button>+ New Request</button>
@@ -228,8 +228,6 @@
                 </div>
             </form>
         </section>
-
-        <section></section>
 
 
     </main>
