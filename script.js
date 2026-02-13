@@ -1,6 +1,34 @@
 window.location.hash = '#/'
 const STORAGE_KEY = 'ipt_demo_v1'
-localStorage[STORAGE_KEY] = JSON.stringify(window.db)
+window.db = {
+    accounts:[],
+    departments: [],
+    employees: [],
+    requests: []
+}
+
+loadFromStorage();
+
+function loadFromStorage(){
+    data = localStorage[STORAGE_KEY];
+    
+    if (!data){
+        window.db.departments.push('Engineering', 'HR')
+        window.db.accounts.push({
+            firstName: 'Admin',
+            lastName: 'User',
+            email: 'admin@example.com',
+            password: 'Password123!',
+            verified: true,
+            role: 'admin'
+        })
+        saveToStorage()
+    }
+}
+
+function saveToStorage(){
+    localStorage[STORAGE_KEY]  = JSON.stringify(window.db)
+}
 
 
 //SECTION COMPONENTS
