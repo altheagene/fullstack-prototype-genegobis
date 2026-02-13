@@ -24,7 +24,7 @@
                     <li onclick="navigateTo('#/accounts')"class="role-admin">Accounts</li>
                     <li onclick="navigateTo('#/departments')"class="role-admin">Departments</li>
                     <li onclick="navigateTo('#/requests')">MyRequests</li>
-                    <li>Logout</li>
+                    <li onclick="handleLogout()">Logout</li>
                 </ul>
             </div>
         </div>
@@ -120,7 +120,7 @@
             </div>
         </section>
 
-        <section id="employees-page" class="page">
+        <section id="employees-page" class="role-admin page">
             <div class="page-header">
                 <h1>Employees</h1>
                 <button>+ Add Employee</button>
@@ -164,7 +164,7 @@
             </form>
         </section>
 
-        <section id="departments-page" class="page role-logged-in role-admin">
+        <section id="departments-page" class="role-logged-in role-admin page ">
             <div>
                 <h1>Departments</h1>
                 <button>+ Add Department</button>
@@ -179,7 +179,7 @@
             </table>
         </section>
 
-        <section id="accounts-page" class="page role-logged-in role-admin">
+        <section id="accounts-page" class="role-logged-in role-admin page ">
             <div>
                 <h1>Accounts</h1>
                 <button>+ Add Account</button>
@@ -227,7 +227,7 @@
             </form>
         </section>
 
-        <section id="requests-page" class="page role-logged-in role-admin">
+        <section id="requests-page" class="role-logged-in role-admin page">
             <div>
                 <h1>My Requests</h1>
                 <button>+ New Request</button>
