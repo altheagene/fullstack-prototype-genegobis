@@ -1,6 +1,6 @@
 window.location.hash = '#/'
 
-//COMPONENTS
+//SECTION COMPONENTS
 const homePage = document.getElementById('home-page');
 const registerPage = document.getElementById('register-page')
 const verifyEmailPage = document.getElementById('verify-email-page');
@@ -11,6 +11,8 @@ const departmentsPage = document.getElementById('departments-page')
 const accountsPage = document.getElementById('accounts-page');
 const requestsPage = document.getElementById('requests-page');
 console.log('hi')
+
+
 
 let currentUser = null;
 let currentPage = homePage;
@@ -35,6 +37,10 @@ function handleRouting(){
     }
 
     currentPage.classList.toggle('active')
+}
+
+function handleRegistration(){
+
 }
 
 window.addEventListener("hashchange", handleRouting);
