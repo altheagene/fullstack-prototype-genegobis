@@ -54,7 +54,7 @@ body.not-authenticated .role-logged-in{
     display: none;
 }
 
-body.not-authenticated .role-logged-out{
+body.authenticated .role-logged-out{
     display: none;
 }
 

@@ -14,20 +14,14 @@ console.log('hi')
 
 let currentUser = null;
 let currentPage = homePage;
+window.db = {};
+window.db.accounts = [];
+window.db.departments = [];
+window.db.employees = [];
+window.db.requests = []
 
 function navigateTo(hash){
     window.location.hash = hash
-    // currentPage.classList.remove('active')
-
-    // switch(hash){
-    //     case '#/register-page' : currentPage = registerPage; break;
-    //     case '#/login-page':   currentPage = loginPage; break;
-    //     case '#/verify-email-page' : currentPage = verifyEmailPage; break;
-    //     case '#/profile-page' : currentPage = profilePage; break;
-    //     case '#/employees-page' : currentPage = employeesPage; break;
-    // }   
-    // console.log(currentPage)
-    // currentPage.classList.add('active');
 }
 
 function handleRouting(){

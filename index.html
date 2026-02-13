@@ -16,7 +16,7 @@
         </ul>
     </nav>
     <main>
-        <section id="home-page" class="page active">
+        <section id="home-page" class="page active role-logged-out">
             <h1>Welcome to Full-Stack App</h1>
             <p>A static prototype before backend integration. Simualtes:</p>
             <ul class="mb-4">
@@ -35,7 +35,7 @@
             
         </section>
 
-        <section id="register-page" class="page">
+        <section id="register-page" class="page role-logged-out">
             <h1>Register Account</h1>
             <form action="post">
                 <label for="">First name
@@ -61,7 +61,7 @@
             </form>
         </section>
 
-        <section id="verify-email-page" class="page">
+        <section id="verify-email-page" class="page role-logged-out">
             <h1>Verify Your Email</h1>
             <div>
                 <p>A verification link has been sent to</p>
@@ -90,7 +90,7 @@
             </form>
         </section>
 
-        <section id="profile-page" class="page">
+        <section id="profile-page" class="page role-logged-in">
             <h1>My Profile</h1>
             <div>
                 <h2>Admin User</h2>
@@ -146,7 +146,7 @@
             </form>
         </section>
 
-        <section id="departments-page" class="page">
+        <section id="departments-page" class="page role-logged-in">
             <div>
                 <h1>Departments</h1>
                 <button>+ Add Department</button>
@@ -161,7 +161,7 @@
             </table>
         </section>
 
-        <section id="accounts-page" class="page">
+        <section id="accounts-page" class="page role-logged-in">
             <div>
                 <h1>Accounts</h1>
                 <button>+ Add Account</button>
@@ -209,7 +209,7 @@
             </form>
         </section>
 
-        <section id="requests-page" class="page">
+        <section id="requests-page" class="page role-logged-in">
             <div>
                 <h1>My Requests</h1>
                 <button>+ New Request</button>
