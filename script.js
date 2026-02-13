@@ -104,22 +104,37 @@ function handleVerification(){
 
 function handleLogin(data){
     console.log(data)
-    const account = window.db.accounts.filter(account => account.email == data.email && account.password == data.password)
-    console.log(account)
-    if(account.length == 1){
-        currentUser = account[0];
-        if(account.role == 'admin'){
+    const user = window.db.accounts.find(account => account.email == data.email 
+                                                        && account.password == data.password
+                                                        && account.verified)
+    
+    if(user){
+        localStorage.auth_token = user.email;
+        setAuthState(true, user)
+        document.getElementById('login-invalid').classList.add('hide-msg')
+    }else{
+        document.getElementById('login-invalid').classList.remove('hide-msg');
+    }
+    
+}
+
+function setAuthState(isAuth, user){
+    currentUser = user;
+        if(user.role == 'admin'){
             body.classList.add('is-admin');
             document.getElementById('role').innerText = 'Admin'
         }else{
             document.getElementById('role').innerText = 'User'
         }
 
-        body.classList.remove('not-authenticated');
-        body.classList.add('authenticated')
-        
-        navigateTo('#/profile')
-    }
+        if(isAuth){
+            body.classList.remove('not-authenticated');
+            body.classList.add('authenticated')
+            navigateTo('#/profile')
+        }else{
+            body.classList.remove('authenticated');
+            body.classList.add('not-authenticated');
+        }
     
 }
 
