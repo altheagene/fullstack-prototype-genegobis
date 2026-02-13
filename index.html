@@ -10,10 +10,24 @@
 <body class="not-authenticated">
     <nav class="px-3">
         <p>Full-Stack App Genegobis</p>
-        <ul class="nav-list">
+        <ul class="nav-list role-logged-out">
             <li onclick="navigateTo('#/login')">Login</li>
             <li onclick="navigateTo('#/register')">Register</li>
         </ul>
+        
+        <div class="role-logged-in">
+            <p id="role"></p>
+            <div class="dropdown">
+                <ul>
+                    <li>Profile</li>
+                    <li class="role-admin" >Employees</li>
+                    <li class="role-admin">Accounts</li>
+                    <li class="role-admin">Departments</li>
+                    <li onclick="navigateTo('#/requests')">MyRequests</li>
+                    <li>Logout</li>
+                </ul>
+            </div>
+        </div>
     </nav>
     <main>
         <section id="home-page" class="page active role-logged-out">
@@ -78,10 +92,10 @@
             <h1>Login</h1>
             <form action="" id="login-form">
                 <label for="email">Email
-                    <input type="text">
+                    <input type="text"  name="email" required>
                 </label>
                 <label for="password">Password
-                    <input type="password">
+                    <input type="password"  name="password" required>
                 </label>
 
                 <div class="buttons-div">

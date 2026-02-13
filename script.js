@@ -56,6 +56,7 @@ function handleRouting(){
                                 document.getElementById('unverified-email').innerText = localStorage.getItem('unverified_email')
                                 break;
         case '#/profile' : currentPage = profilePage; break;
+        case '#/requests' : currentPage = requestsPage; break;
     }
 
     currentPage.classList.toggle('active')
@@ -98,17 +99,24 @@ function handleVerification(){
 }
 
 function handleLogin(data){
+    console.log(data)
     const account = window.db.accounts.filter(account => account.email == data.email && account.password == data.password)
-
-    if(account){
+    console.log(account)
+    if(account.length == 1){
         currentUser = account;
         if(account.role == 'admin'){
-            body.classList.add('is-admin')
+            body.classList.add('is-admin');
+            document.getElementById('role').innerText = 'Admin'
+        }else{
+            document.getElementById('role').innerText = 'User'
         }
+
+        body.classList.remove('not-authenticated');
+        body.classList.add('authenticated')
+        
+        navigateTo('#/profile')
     }
-    body.classList.remove('not-authenticated');
-    body.classList.add('authenticated')
-    navigateTo('#/profile')
+    
 }
 
 window.addEventListener("hashchange", handleRouting);
