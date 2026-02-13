@@ -19,10 +19,10 @@
             <p id="role"></p>
             <div class="dropdown">
                 <ul>
-                    <li>Profile</li>
-                    <li class="role-admin" >Employees</li>
-                    <li class="role-admin">Accounts</li>
-                    <li class="role-admin">Departments</li>
+                    <li  onclick="navigateTo('#/profile')">Profile</li>
+                    <li onclick="navigateTo('#/employees')"class="role-admin" >Employees</li>
+                    <li onclick="navigateTo('#/accounts')"class="role-admin">Accounts</li>
+                    <li onclick="navigateTo('#/departments')"class="role-admin">Departments</li>
                     <li onclick="navigateTo('#/requests')">MyRequests</li>
                     <li>Logout</li>
                 </ul>
@@ -90,6 +90,9 @@
 
         <section id="login-page" class="page">
             <h1>Login</h1>
+            <div id="login-invalid" class="hide-msg">
+                <p>Invalid credentials!</p>
+            </div>
             <form action="" id="login-form">
                 <label for="email">Email
                     <input type="text"  name="email" required>
