@@ -55,7 +55,11 @@ function handleRouting(){
         case '#/verify-email' : currentPage = verifyEmailPage; 
                                 document.getElementById('unverified-email').innerText = localStorage.getItem('unverified_email')
                                 break;
-        case '#/profile' : currentPage = profilePage; break;
+        case '#/profile' : 
+                        currentPage = profilePage; 
+                        document.getElementById('profile-email').innerText = currentUser.email;
+                        document.getElementById('profile-role').innerText = currentUser.role;
+                        break;
         case '#/requests' : currentPage = requestsPage; break;
     }
 
@@ -103,7 +107,7 @@ function handleLogin(data){
     const account = window.db.accounts.filter(account => account.email == data.email && account.password == data.password)
     console.log(account)
     if(account.length == 1){
-        currentUser = account;
+        currentUser = account[0];
         if(account.role == 'admin'){
             body.classList.add('is-admin');
             document.getElementById('role').innerText = 'Admin'
