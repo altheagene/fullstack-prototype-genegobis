@@ -1,4 +1,5 @@
 window.location.hash = '#/'
+const body = document.querySelector('body');
 
 //SECTION COMPONENTS
 const homePage = document.getElementById('home-page');
@@ -22,6 +23,13 @@ document.getElementById('registration-form')
         handleRegistration(data);
 });
 
+document.getElementById('login-form').addEventListener('submit', function(e){
+    e.preventDefault()
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    handleLogin(data);
+})
+
 let currentUser = null;
 let currentPage = homePage;
 window.db = {};
@@ -41,8 +49,10 @@ function handleRouting(){
     switch (hash){
         case '#/login': currentPage = loginPage; break;
         case '#/register' : currentPage = registerPage; break;
-        case '#/verify-email' : currentPage = verifyEmailPage; break;
-        case '#/profile-page' : currentPage = profilePage; break;
+        case '#/verify-email' : currentPage = verifyEmailPage; 
+                                document.getElementById('unverified-email').innerText = localStorage.getItem('unverified_email')
+                                break;
+        case '#/profile' : currentPage = profilePage; break;
     }
 
     currentPage.classList.toggle('active')
@@ -61,15 +71,38 @@ function handleRegistration(data){
          document.getElementById('pass-error-msg').classList.add('hide-msg');
     }
 
-    //check validity of email
+    //check validity and uniqueness of email
     const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     const match = emailRegEx.test(email);
 
+    if(!match)
+        return;
+
     data.verified = false;
-    console.log(data);
+    data.role = 'user'
+    localStorage.setItem('unverified_email', email);
     window.db.accounts.push(data);
     navigateTo('#/verify-email');
+}
 
+function handleVerification(){
+    const unverifiedEmail = localStorage.getItem('unverified_email')
+    let index = window.db.accounts.findIndex((account) => account.email == unverifiedEmail)
+    window.db.accounts[index].verified = true
+    navigateTo('#/login')
+}
+
+function handleLogin(data){
+    const account = window.db.accounts.filter(account => account.email == data.email && account.password == data.password)
+
+    if(account){
+        currentUser = account;
+        if(account.role == 'admin'){
+            body.classList.add('is-admin')
+        }
+    }
+
+    navigateTo('#/profile')
 }
 
 window.addEventListener("hashchange", handleRouting);

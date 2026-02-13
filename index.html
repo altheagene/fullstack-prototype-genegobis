@@ -65,18 +65,18 @@
         <section id="verify-email-page" class="page role-logged-out">
             <h1>Verify Your Email</h1>
             <div>
-                <p>A verification link has been sent to</p>
+                <p>A verification link has been sent to <span id="unverified-email"></span></p>
             </div>
             <p>For demo purposes, click below to simulate verification:</p>
             <div class="buttons-div">
-                <button>Simulate Email Verification</button>
+                <button onclick="handleVerification()">Simulate Email Verification</button>
                 <button>Go to Login</button>
             </div>
         </section>
 
         <section id="login-page" class="page">
             <h1>Login</h1>
-            <form action="">
+            <form action="" id="login-form">
                 <label for="email">Email
                     <input type="text">
                 </label>
@@ -85,8 +85,8 @@
                 </label>
 
                 <div class="buttons-div">
-                    <button type="button" onclick="location.hash='#/profile-page'">Login</button>
-                    <button>Cancel</button>
+                    <button type="submit">Login</button>
+                    <button type="button">Cancel</button>
                 </div>
             </form>
         </section>
@@ -147,7 +147,7 @@
             </form>
         </section>
 
-        <section id="departments-page" class="page role-logged-in">
+        <section id="departments-page" class="page role-logged-in role-admin">
             <div>
                 <h1>Departments</h1>
                 <button>+ Add Department</button>
@@ -162,7 +162,7 @@
             </table>
         </section>
 
-        <section id="accounts-page" class="page role-logged-in">
+        <section id="accounts-page" class="page role-logged-in role-admin">
             <div>
                 <h1>Accounts</h1>
                 <button>+ Add Account</button>
@@ -210,7 +210,7 @@
             </form>
         </section>
 
-        <section id="requests-page" class="page role-logged-in">
+        <section id="requests-page" class="page role-logged-in role-admin">
             <div>
                 <h1>My Requests</h1>
                 <button>+ New Request</button>
