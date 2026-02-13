@@ -131,3 +131,7 @@ input{
     border-radius: 5px;
     border: 1px solid #4040409e
 }
+
+.hide-msg{
+    display: none;
+}

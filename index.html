@@ -37,25 +37,26 @@
 
         <section id="register-page" class="page role-logged-out">
             <h1>Register Account</h1>
-            <form action="post" name="resgitration-form ">
+            <form action="post" id="registration-form">
                 <label for="">First name
-                    <input name="first-name">
+                    <input name="firstName" required>
                 </label>
 
                 <label for="">LastName
-                    <input  name="last-name">
+                    <input  name="lastName" required>
                 </label>
 
                 <label for="">Email
-                    <input name="email">
+                    <input name="email" required>
                 </label>
 
                 <label>Password
-                    <input type="password" name="password">
+                    <input type="password" name="password" required>
                 </label>
+                <p id="pass-error-msg" class="hide-msg">Password must be at least 6 characters long!</p>
 
                 <div class="buttons-div">
-                    <button type="button" onclick="navigateTo('#/verify-email')">Sign Up</button>
+                    <button type="submit" >Sign Up</button>
                     <button>Cancel</button>
                 </div>
             </form>

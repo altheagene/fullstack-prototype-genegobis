@@ -12,7 +12,15 @@ const accountsPage = document.getElementById('accounts-page');
 const requestsPage = document.getElementById('requests-page');
 console.log('hi')
 
-
+//OTHER ELEMENTS
+document.getElementById('registration-form')
+    .addEventListener('submit', function(e){
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        handleRegistration(data);
+});
 
 let currentUser = null;
 let currentPage = homePage;
@@ -28,7 +36,8 @@ function navigateTo(hash){
 
 function handleRouting(){
     const hash = window.location.hash;
-    currentPage.classList.toggle('active')
+    currentPage.classList.toggle('active');
+    console.log('HIE HOW ARE YA')
     switch (hash){
         case '#/login': currentPage = loginPage; break;
         case '#/register' : currentPage = registerPage; break;
@@ -39,7 +48,27 @@ function handleRouting(){
     currentPage.classList.toggle('active')
 }
 
-function handleRegistration(){
+function handleRegistration(data){
+    const password = data.password;
+    const email = data.email;
+
+    //check password length
+    if(password.length < 6){
+        //show error message the password must be 6 characters long
+        document.getElementById('pass-error-msg').classList.remove('hide-msg');
+        return;
+    }else{
+         document.getElementById('pass-error-msg').classList.add('hide-msg');
+    }
+
+    //check validity of email
+    const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const match = emailRegEx.test(email);
+
+    data.verified = false;
+    console.log(data);
+    window.db.accounts.push(data);
+    navigateTo('#/verify-email');
 
 }
 
