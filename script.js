@@ -7,12 +7,14 @@ window.db = {
     requests: []
 }
 
+
 loadFromStorage();
 
 function loadFromStorage(){
-    data = localStorage[STORAGE_KEY];
+    console.log(localStorage[STORAGE_KEY]);
     
-    if (!data){
+    
+    if (localStorage[STORAGE_KEY] == undefined){
         window.db.departments.push('Engineering', 'HR')
         window.db.accounts.push({
             firstName: 'Admin',
@@ -22,8 +24,17 @@ function loadFromStorage(){
             verified: true,
             role: 'admin'
         })
-        saveToStorage()
+        saveToStorage();
+    }else{
+        const data = JSON.parse(localStorage[STORAGE_KEY])
+        console.log('HELLO')
+        window.db.accounts = data.accounts;
+        window.db.departments = data.departments;
+        window.db.employees = data.employees;
+        window.db.requests = data.requests;
     }
+
+    console.log(localStorage[STORAGE_KEY])
 }
 
 function saveToStorage(){
@@ -43,6 +54,8 @@ const accountsPage = document.getElementById('accounts-page');
 const requestsPage = document.getElementById('requests-page');
 console.log('hi')
 
+let currentUser = null;
+let currentPage = homePage;
 //OTHER ELEMENTS
 const body = document.querySelector('body');
 document.getElementById('registration-form')
@@ -61,13 +74,6 @@ document.getElementById('login-form').addEventListener('submit', function(e){
     handleLogin(data);
 })
 
-let currentUser = null;
-let currentPage = homePage;
-window.db = {};
-window.db.accounts = [];
-window.db.departments = [];
-window.db.employees = [];
-window.db.requests = []
 
 function navigateTo(hash){
     window.location.hash = hash
@@ -75,9 +81,10 @@ function navigateTo(hash){
 
 function handleRouting(){
     const hash = window.location.hash;
-    currentPage.classList.toggle('active');
+    currentPage.classList.remove('active');
     console.log('HIE HOW ARE YA')
     switch (hash){
+        case '#/home': currentPage = homePage;break;
         case '#/login': currentPage = loginPage; break;
         case '#/register' : currentPage = registerPage; break;
         case '#/verify-email' : currentPage = verifyEmailPage; 
@@ -91,7 +98,7 @@ function handleRouting(){
         case '#/requests' : currentPage = requestsPage; break;
     }
 
-    currentPage.classList.toggle('active')
+    currentPage.classList.add('active')
 }
 
 function handleRegistration(data){
@@ -117,25 +124,29 @@ function handleRegistration(data){
     data.verified = false;
     data.role = 'user'
     localStorage.setItem('unverified_email', email);
+    console.log(window.db.accounts)
     window.db.accounts.push(data);
-    localStorage[STORAGE_KEY] = JSON.stringify(window.db)
+    console.log(window.db.accounts)
+    saveToStorage()
     navigateTo('#/verify-email');
 }
 
 function handleVerification(){
-    const unverifiedEmail = localStorage.getItem('unverified_email')
+    const unverifiedEmail = localStorage.getItem('unverified_email');
+    console.log(window.db.accounts)
     let index = window.db.accounts.findIndex((account) => account.email == unverifiedEmail)
     window.db.accounts[index].verified = true
-    localStorage[STORAGE_KEY] = JSON.stringify(window.db)
+    
     navigateTo('#/login')
 }
 
 function handleLogin(data){
     console.log(data)
+    console.log(window.db.accounts)
     const user = window.db.accounts.find(account => account.email == data.email 
                                                         && account.password == data.password
                                                         && account.verified)
-    
+    console.log(user)
     if(user){
         localStorage.auth_token = user.email;
         setAuthState(true, user)
@@ -144,6 +155,12 @@ function handleLogin(data){
         document.getElementById('login-invalid').classList.remove('hide-msg');
     }
     
+}
+
+function handleLogout(){
+    localStorage.clear(auth_token)
+    setAuthState(false)
+    navigateTo('#/home');
 }
 
 function setAuthState(isAuth, user){
