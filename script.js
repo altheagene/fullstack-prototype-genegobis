@@ -1,5 +1,7 @@
 window.location.hash = '#/'
-const body = document.querySelector('body');
+const STORAGE_KEY = 'ipt_demo_v1'
+localStorage[STORAGE_KEY] = JSON.stringify(window.db)
+
 
 //SECTION COMPONENTS
 const homePage = document.getElementById('home-page');
@@ -14,6 +16,7 @@ const requestsPage = document.getElementById('requests-page');
 console.log('hi')
 
 //OTHER ELEMENTS
+const body = document.querySelector('body');
 document.getElementById('registration-form')
     .addEventListener('submit', function(e){
         e.preventDefault();
@@ -82,6 +85,7 @@ function handleRegistration(data){
     data.role = 'user'
     localStorage.setItem('unverified_email', email);
     window.db.accounts.push(data);
+    localStorage[STORAGE_KEY] = JSON.stringify(window.db)
     navigateTo('#/verify-email');
 }
 
@@ -89,6 +93,7 @@ function handleVerification(){
     const unverifiedEmail = localStorage.getItem('unverified_email')
     let index = window.db.accounts.findIndex((account) => account.email == unverifiedEmail)
     window.db.accounts[index].verified = true
+    localStorage[STORAGE_KEY] = JSON.stringify(window.db)
     navigateTo('#/login')
 }
 
@@ -101,7 +106,8 @@ function handleLogin(data){
             body.classList.add('is-admin')
         }
     }
-
+    body.classList.remove('not-authenticated');
+    body.classList.add('authenticated')
     navigateTo('#/profile')
 }
 
