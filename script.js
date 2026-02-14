@@ -8,6 +8,8 @@ window.db = {
 }
 let currentUser = null;
 const body = document.querySelector('body');
+let editing = false;
+let editingEmail;
 
 loadFromStorage();
 
@@ -71,6 +73,7 @@ let currentPage = homePage;
 
 const accountsForm = document.getElementById('accounts-form');
 
+
 document.getElementById('registration-form')
     .addEventListener('submit', function(e){
         e.preventDefault();
@@ -118,7 +121,9 @@ function handleRouting(){
         case '#/accounts' : 
                             if(currentUser.role != 'admin')
                                 return;
-                            currentPage = accountsPage; break;
+                            currentPage = accountsPage; 
+                            renderAccounts();
+                            break;
         case '#/departments' : 
                             if(currentUser.role != 'admin')
                                 return;
@@ -240,29 +245,80 @@ function saveAccount(){
     }
     
     document.getElementById('form-message-div').classList.add('hide-msg');
-    window.db.accounts.push(data);
+
+    if(editing){
+        const index = window.db.accounts.findIndex(account => account.email == editingEmail);
+        window.db.accounts[index].firstName = data.firstName;
+        window.db.accounts[index].lastName = data.lastName;
+        window.db.accounts[index].email = data.email;
+        window.db.accounts[index].password = data.password;
+        window.db.accounts[index].role = data.role;
+        window.db.accounts[index].verified = data.verified;
+        saveToStorage()
+    }else{
+        window.db.accounts.push(data);
+    }
+    
     saveToStorage();
+    renderAccounts();
+}
+
+function renderAccounts(){
+    const tbody = document.getElementById('accounts-tbody');
+    tbody.innerHTML = ''
+    console.log(window.db.accounts)
+    for (let account of window.db.accounts){
+        console.log(account)
+        const element = `
+            <tr>
+                <td>${account.firstName} ${account.lastName}</td>
+                <td>${account.email}</td>
+                <td>${account.role == 'admin' ? 'Admin' : 'User'}</td>
+                <td>${account.verified ? '✅' : ' ❌'}</td>
+                <td>
+                    <button onclick="editAccount('${account.email}')">Edit</button>
+                    <button>Reset Password</button>
+                    <button>Delete</button>
+                </td>
+            <tr>
+        `
+
+        tbody.innerHTML += element;
+    }
 }
 
 function setAuthState(isAuth, user){
     currentUser = user;
     if(isAuth){
-            body.classList.remove('not-authenticated');
-            body.classList.add('authenticated')
-            navigateTo('#/profile')
-        }else{
-            body.classList.remove('authenticated');
-            body.classList.add('not-authenticated');
-            return;
-        }
-        if(user.role == 'admin'){
-            body.classList.add('is-admin');
-            document.getElementById('role').innerText = 'Admin'
-        }else{
-            document.getElementById('role').innerText = 'User'
-        }
-
+        body.classList.remove('not-authenticated');
+        body.classList.add('authenticated')
+        navigateTo('#/profile')
+    }else{
+        body.classList.remove('authenticated');
+        body.classList.add('not-authenticated');
+        return;
+    }
     
+    if(user.role == 'admin'){
+        body.classList.add('is-admin');
+        document.getElementById('role').innerText = 'Admin'
+    }else{
+        document.getElementById('role').innerText = 'User'
+        body.classList.remove('is-admin');
+    }  
+}
+
+function editAccount(email){
+    editing = true;
+    editingEmail = email;
+    const user = window.db.accounts.find(account => account.email == email);
+    accountsForm.elements['firstName'].value = user.firstName;
+    accountsForm.elements['lastName'].value = user.lastName;
+    accountsForm.elements['email'].value = user.email;
+    accountsForm.elements['password'].value = user.password;
+    accountsForm.elements['role'].value = user.role;
+    accountsForm.elements['verified-field'].checked = user.verified;
+    document.getElementById('accounts-modal-btn').click();
 }
 
 window.addEventListener("hashchange", handleRouting);
