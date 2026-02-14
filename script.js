@@ -208,7 +208,7 @@ function renderEmployees(){
             </tr>
         `;
 
-        tbody.innerHTML += element;
+        tbody.innerHTML = element;
 
     }
     for(employee in window.db.employees){
@@ -219,14 +219,29 @@ function renderEmployees(){
 function saveAccount(){
     console.log(accountsForm)
     const formData = new FormData(accountsForm)
-    const data = Object.fromEntries(formData)
+    const data = Object.fromEntries(formData);
+    const verifiedField = document.getElementById('verified-field');
     console.log(data)
-    Object.keys(data).forEach(key => {
+    for (let key of Object.keys(data)){
         if(data[key] === ''){
-            console.log('Error message!')
+            console.log('WOW')
+            document.getElementById('form-message-div').classList.remove('hide-msg')
             return;
         }
-    })
+    }
+
+    if(verifiedField.checked){
+        data.verified = true
+        console.log(data)
+       
+    }else{
+        data.verified = false;
+        console.log(data)
+    }
+    
+    document.getElementById('form-message-div').classList.add('hide-msg');
+    window.db.accounts.push(data);
+    saveToStorage();
 }
 
 function setAuthState(isAuth, user){
