@@ -83,6 +83,7 @@ function handleRouting(){
     const hash = window.location.hash;
     currentPage.classList.remove('active');
     console.log('HIE HOW ARE YA')
+
     switch (hash){
         case '#/home': currentPage = homePage;break;
         case '#/login': currentPage = loginPage; break;
@@ -92,10 +93,21 @@ function handleRouting(){
                                 break;
         case '#/profile' : 
                         currentPage = profilePage; 
-                        document.getElementById('profile-email').innerText = currentUser.email;
-                        document.getElementById('profile-role').innerText = currentUser.role;
+                        renderProfile();
                         break;
         case '#/requests' : currentPage = requestsPage; break;
+        case '#/employees' : 
+                            if(currentUser.role != 'admin')
+                                return;
+                            currentPage = employeesPage; break;
+        case '#/accounts' : 
+                            if(currentUser.role != 'admin')
+                                return;
+                            currentPage = accountsPage; break;
+        case '#/departments' : 
+                            if(currentUser.role != 'admin')
+                                return;
+                            currentPage = departmentsPage; break;
     }
 
     currentPage.classList.add('active')
@@ -161,6 +173,13 @@ function handleLogout(){
     localStorage.clear(auth_token)
     setAuthState(false)
     navigateTo('#/home');
+}
+
+function renderProfile(){
+    document.getElementById('first-name').innerText = currentUser.firstName;
+    document.getElementById('last-name').innerText = currentUser.lastName
+    document.getElementById('profile-email').innerText = currentUser.email;
+    document.getElementById('profile-role').innerText = currentUser.role;
 }
 
 function setAuthState(isAuth, user){
