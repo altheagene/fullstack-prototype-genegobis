@@ -6,13 +6,13 @@ window.db = {
     employees: [],
     requests: []
 }
-
+let currentUser = null;
+const body = document.querySelector('body');
 
 loadFromStorage();
 
 function loadFromStorage(){
     console.log(localStorage[STORAGE_KEY]);
-    
     
     if (localStorage[STORAGE_KEY] == undefined){
         window.db.departments.push('Engineering', 'HR')
@@ -32,6 +32,18 @@ function loadFromStorage(){
         window.db.departments = data.departments;
         window.db.employees = data.employees;
         window.db.requests = data.requests;
+    }
+
+    if(localStorage.auth_token !=undefined){
+        currentUser = window.db.accounts.find(account => account.email == localStorage.auth_token);
+        body.classList.remove('not-authenticated')
+        body.classList.add('authenticated')
+        console.log(currentUser)
+
+        if(currentUser.role == 'admin'){
+            body.classList.add('is-admin')
+        }
+        navigateTo('#/profile')
     }
 
     console.log(localStorage[STORAGE_KEY])
@@ -54,10 +66,11 @@ const accountsPage = document.getElementById('accounts-page');
 const requestsPage = document.getElementById('requests-page');
 console.log('hi')
 
-let currentUser = null;
 let currentPage = homePage;
 //OTHER ELEMENTS
-const body = document.querySelector('body');
+
+const accountsForm = document.getElementById('accounts-form');
+
 document.getElementById('registration-form')
     .addEventListener('submit', function(e){
         e.preventDefault();
@@ -99,7 +112,9 @@ function handleRouting(){
         case '#/employees' : 
                             if(currentUser.role != 'admin')
                                 return;
-                            currentPage = employeesPage; break;
+                            currentPage = employeesPage; 
+                            renderEmployees();
+                            break;
         case '#/accounts' : 
                             if(currentUser.role != 'admin')
                                 return;
@@ -148,7 +163,7 @@ function handleVerification(){
     console.log(window.db.accounts)
     let index = window.db.accounts.findIndex((account) => account.email == unverifiedEmail)
     window.db.accounts[index].verified = true
-    
+    saveToStorage();
     navigateTo('#/login')
 }
 
@@ -170,20 +185,61 @@ function handleLogin(data){
 }
 
 function handleLogout(){
-    localStorage.clear(auth_token)
+    localStorage.removeItem("auth_token")
     setAuthState(false)
     navigateTo('#/home');
 }
 
 function renderProfile(){
+    console.log('HELLO!')
     document.getElementById('first-name').innerText = currentUser.firstName;
     document.getElementById('last-name').innerText = currentUser.lastName
     document.getElementById('profile-email').innerText = currentUser.email;
     document.getElementById('profile-role').innerText = currentUser.role;
 }
 
+function renderEmployees(){
+    const tbody = document.getElementById('employees-tbody');
+    
+    if(window.db.employees.length == 0){
+        const element = `
+            <tr>
+              <td>No employees found</td>  
+            </tr>
+        `;
+
+        tbody.innerHTML += element;
+
+    }
+    for(employee in window.db.employees){
+        
+    }
+}
+
+function saveAccount(){
+    console.log(accountsForm)
+    const formData = new FormData(accountsForm)
+    const data = Object.fromEntries(formData)
+    console.log(data)
+    Object.keys(data).forEach(key => {
+        if(data[key] === ''){
+            console.log('Error message!')
+            return;
+        }
+    })
+}
+
 function setAuthState(isAuth, user){
     currentUser = user;
+    if(isAuth){
+            body.classList.remove('not-authenticated');
+            body.classList.add('authenticated')
+            navigateTo('#/profile')
+        }else{
+            body.classList.remove('authenticated');
+            body.classList.add('not-authenticated');
+            return;
+        }
         if(user.role == 'admin'){
             body.classList.add('is-admin');
             document.getElementById('role').innerText = 'Admin'
@@ -191,14 +247,6 @@ function setAuthState(isAuth, user){
             document.getElementById('role').innerText = 'User'
         }
 
-        if(isAuth){
-            body.classList.remove('not-authenticated');
-            body.classList.add('authenticated')
-            navigateTo('#/profile')
-        }else{
-            body.classList.remove('authenticated');
-            body.classList.add('not-authenticated');
-        }
     
 }
 
