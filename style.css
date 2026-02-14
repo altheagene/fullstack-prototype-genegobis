@@ -40,7 +40,15 @@ button{
     border-radius: 5px;
 }
 
+li{
+    cursor: pointer;
+}
+
 /* ================REQUIREMENTS================= */
+
+body.is-admin .role-admin{
+    display: block;
+}
 
 .page{
     display: none;
@@ -62,9 +70,6 @@ body.authenticated .role-logged-out{
     display: none;
 }
 
-body.is-admin .role-admin{
-    display: block;
-}
 
 /* ============== SECTION ============= */
 
