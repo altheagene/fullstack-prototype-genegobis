@@ -149,33 +149,38 @@
                         </div>
 
                         <div class="modal-body">
-                            <form action="">
-                                <label for="">Employee ID
-                                    <input type="text">
+                            <div id="employee-form-msg-div" class="hide-msg">
+                                
+                            </div>
+                            <form action="" id="employees-form">
+                                <label for="">Employee ID<span class="text-danger">*</span>
+                                    <input type="text" name="id">
                                 </label>
 
-                                <label for="">User email
-                                    <input type="text">
+                                <label for="">User email <span class="text-danger">*</span>
+                                    <input type="text" name="email">
                                 </label>
 
-                                <label for="">Position
-                                    <input type="text">
+                                <label for="">Position <span class="text-danger">*</span>
+                                    <input type="text" name="position">
                                 </label>
 
-                                <label for="">Department
-                                    <select name="" id=""></select>
+                                <label for="">Department <span class="text-danger">*</span>
+                                    <select name="department">
+                                        
+                                    </select>
                                 </label>
 
-                                <label for="">Hire Date
-                                    <input type="date">
+                                <label for="">Hire Date <span class="text-danger">*</span>
+                                    <input type="date" name="hireDate">
                                 </label>
                             </form>
                         </div>
 
                         <div class="modal-footer">
                             <div class="buttons-div">
-                                <button>Save</button>
-                                <button data-bs-dismiss="modal">Cancel</button>
+                                <button onclick="saveEmployee()">Save</button>
+                                <button data-bs-dismiss="modal" id="employee-cancel-btn">Cancel</button>
                             </div>
                         </div>
                 
@@ -185,9 +190,9 @@
         </section>
 
         <section id="departments-page" class="role-logged-in page ">
-            <div>
+            <div class="page-header">
                 <h1>Departments</h1>
-                <button>+ Add Department</button>
+                <button onclick="addDepartment()">+ Add Department</button>
             </div>
 
             <table>
@@ -200,52 +205,61 @@
         </section>
 
         <section id="accounts-page" class="role-logged-in page ">
-            <div>
+            <div class="page-header">
                 <h1>Accounts</h1>
-                <button data-bs-toggle="modal" data-bs-target="#accounts-modal">+ Add Account</button>
+                <button data-bs-toggle="modal" data-bs-target="#accounts-modal" id="accounts-modal-btn">+ Add Account</button>
             </div>
 
             <table>
-                <tr>
+                <thead>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
                     <th>Verified</th>
                     <th>Actions</th>
-                </tr>
+                </thead>
+                <tbody id="accounts-tbody">
+                    
+                </tbody>
             </table>
 
             <div class="modal" id="accounts-modal">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-header">
-
+                        <div class="modal-header" id="accounts-modal-header">
+                            
                         </div>
 
                         <div class="modal-body">
+                            <div id="form-message-div" class="hide-msg">
+                                
+                            </div>
                             <form id="accounts-form">
-                                <label for="">First name
+                                <label for="">First name <span class="text-danger">*</span>
                                     <input name="firstName" type="text">
                                 </label>
 
-                                <label for="" name="lastName">Last name
+                                <label for="" name="lastName">Last name <span class="text-danger">*</span>
                                     <input name="lastName" type="text">
                                 </label>
 
-                                <label for="" >Email
+                                <label for="" >Email <span class="text-danger">*</span>
                                     <input type="text" name="email" >
                                 </label>
 
-                                <label for="">Password
+                                <label for="">Password <span class="text-danger">*</span>
                                     <input type="password" name="password">
                                 </label>
 
-                                <label for="">Role
-                                    <input type="text" name="role">
+                                <label for="">Role <span class="text-danger">*</span>
+                                    <select id="" name="role">
+                                        <option value="user">User</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
                                 </label>
 
                                 <label for="">
-                                    <input type="checkbox">Verified
+                                    <input type="checkbox" id="verified-field" value="true">Verified
                                 </label>
                             </form>
                         </div>
@@ -253,35 +267,60 @@
                         <div class="modal-footer">
                             <div class="buttons-div">
                                 <button onclick="saveAccount()">Save</button>
-                                <button data-bs-dismiss="modal">Cancel</button>
+                                <button data-bs-dismiss="modal" onclick="resetAccountModal()" id="accounts-cancel-btn">Cancel</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
+            </div>
         </section>
 
         <section id="requests-page" class="role-logged-in page">
-            <div>
+            <div class="page-header">
                 <h1>My Requests</h1>
-                <button>+ New Request</button>
+                <button data-bs-target="#request-modal" data-bs-toggle="modal">+ New Request</button>
             </div>
 
             <button>Create One</button>
 
-            <form action="">
-                <label for="">Type
-                    <select name="" id=""></select>
-                </label>
+            <div class="modal" id="request-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
 
-                <label for="">Items</label>
-                <div>
-                    <input type="text">
-                    <input type="number">
-                    <button>+</button>
+                        </div>
+
+                        <div class="modal-body">
+                            <form action="">
+                                <label for="">Type
+                                    <select name="" id="" name="type">
+                                        <option value="equipment">Equipment</option>
+                                        <option value="leave">Leave</option>
+                                        <option value="resources">Resources</option>
+                                    </select>
+                                </label>
+
+                                <label for="">Items</label>
+                                <div class="item-div">
+                                    <input type="text">
+                                    <input type="number">
+                                    <button>+</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <div class="buttons-div">
+                                <button >Save</button>
+                                <button data-bs-dismiss="modal" >Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+            
         </section>
 
 
