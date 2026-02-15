@@ -11,6 +11,8 @@ const body = document.querySelector('body');
 let editing = false;
 let editingEmail;
 
+let items = [];
+
 const accountsForm = document.getElementById('accounts-form');
 const employeesForm = document.getElementById('employees-form');
 
@@ -32,6 +34,7 @@ function loadFromStorage(){
                 description: 'Department of Human Resources'
             })
         window.db.accounts.push({
+            id: 1,
             firstName: 'Admin',
             lastName: 'User',
             email: 'admin@example.com',
@@ -177,6 +180,11 @@ function handleRegistration(data){
 
     data.verified = false;
     data.role = 'user'
+    const length = window.db.accounts.length;
+
+    //userid will be length of current accounts array plus one
+    data.id = length + 1;
+
     localStorage.setItem('unverified_email', email);
     console.log(window.db.accounts)
     window.db.accounts.push(data);
@@ -329,6 +337,13 @@ function renderAccounts(){
 
 function renderRequests(){
     
+    for (let request in window.db.requests){
+        const element = `
+            <tr>
+
+            <tr>
+        `
+    }
 }
 
 function setAuthState(isAuth, user){
@@ -441,6 +456,70 @@ function saveEmployee(){
     saveToStorage();
     document.getElementById('employee-cancel-btn').click();
     renderEmployees();
+}
+
+function addNewItem(){
+    const itemRequestsDiv = document.getElementById('item-requests-div');
+    const id = items.length;
+    const element = `
+            <div class="item-div" id="${id}">
+                <input type="text" name="itemName">
+                <input type="number" name="itemQty">
+                <button type="button" onclick="deleteItem(${id})">x</button>
+            </div>
+    `
+
+    itemRequestsDiv.innerHTML += element;
+    items.push({})
+    
+}
+
+function renderItems(){
+    const itemRequestsDiv = document.getElementById('item-requests-div');
+    itemRequestsDiv.innerHTML = '';
+    for (let i = 0; i < items.length; i++){
+        let element;
+        if(i == 0){
+            element = `
+                <div class="item-div">
+                    <input type="text" name="itemName">
+                    <input type="number" name="itemQty">
+                    <button type="button" onclick="addNewItem()">+</button>
+                </div>
+            `
+        }else{
+            element = `
+                <div class="item-div">
+                    <input type="text" name="itemName">
+                    <input type="number" name="itemQty">
+                    <button type="button" onclick="deleteItem(${i})">x</button>
+                </div>
+            `
+        }
+
+         itemRequestsDiv.innerHTML += element
+    }
+}
+
+function deleteItem(id){
+    //remove item element at place of id. if id is 2, remove element at index 2-1 = 1
+    items.splice(id, 1)
+    renderItems();
+}
+
+function saveItems(){
+    const itemDivs = document.querySelector('.item-divs');
+}
+
+function openRequestModal(){
+    items = [
+        {
+            itemName: '',
+            itemQty: 1,
+        }
+    ]
+
+    renderItems()
 }
 
 
