@@ -11,13 +11,26 @@ const body = document.querySelector('body');
 let editing = false;
 let editingEmail;
 
+const accountsForm = document.getElementById('accounts-form');
+const employeesForm = document.getElementById('employees-form');
+
 loadFromStorage();
 
 function loadFromStorage(){
     console.log(localStorage[STORAGE_KEY]);
     
     if (localStorage[STORAGE_KEY] == undefined){
-        window.db.departments.push('Engineering', 'HR')
+        window.db.departments.push(
+            {
+                id: 1,
+                name: 'Engineering',
+                description: 'Department of Engineering'
+            }, 
+            {
+                id: 2,
+                name: 'HR',
+                description: 'Department of Human Resources'
+            })
         window.db.accounts.push({
             firstName: 'Admin',
             lastName: 'User',
@@ -48,6 +61,15 @@ function loadFromStorage(){
         navigateTo('#/profile')
     }
 
+    
+    //render departments
+    for(let department of window.db.departments){
+        const element = `
+            <option value=${department.name}>${department.name}</option>
+        `
+
+        employeesForm.elements['department'].innerHTML += element;
+    }
     console.log(localStorage[STORAGE_KEY])
 }
 
@@ -71,7 +93,7 @@ console.log('hi')
 let currentPage = homePage;
 //OTHER ELEMENTS
 
-const accountsForm = document.getElementById('accounts-form');
+
 
 
 document.getElementById('registration-form')
@@ -205,7 +227,7 @@ function renderProfile(){
 
 function renderEmployees(){
     const tbody = document.getElementById('employees-tbody');
-    
+    tbody.innerHTML =''
     if(window.db.employees.length == 0){
         const element = `
             <tr>
@@ -216,8 +238,17 @@ function renderEmployees(){
         tbody.innerHTML = element;
 
     }
-    for(employee in window.db.employees){
-        
+    for(let employee of window.db.employees){
+        const element = `
+            <tr>
+                <td>${employee.id}</td>
+                <td>${employee.name}</td>
+                <td>${employee.email}</td>
+                <td>${employee.position}</td?>
+            <tr>
+        `
+
+        tbody.innerHTML += element
     }
 }
 
@@ -247,6 +278,14 @@ function saveAccount(){
     document.getElementById('form-message-div').classList.add('hide-msg');
 
     if(editing){
+        const emailExists = window.db.accounts.some(account => account.email == editingEmail)
+
+        if(emailExists && data.email != editingEmail){
+            const element = document.getElementById('form-message-div')
+            element.innerText =  'Email already exists!';
+            element.classList.remove('hide-msg')
+            return;
+        }
         const index = window.db.accounts.findIndex(account => account.email == editingEmail);
         window.db.accounts[index].firstName = data.firstName;
         window.db.accounts[index].lastName = data.lastName;
@@ -258,9 +297,10 @@ function saveAccount(){
     }else{
         window.db.accounts.push(data);
     }
-    
+    document.getElementById('accounts-cancel-btn').click();
     saveToStorage();
     renderAccounts();
+    resetAccountModal();
 }
 
 function renderAccounts(){
@@ -277,14 +317,18 @@ function renderAccounts(){
                 <td>${account.verified ? '✅' : ' ❌'}</td>
                 <td>
                     <button onclick="editAccount('${account.email}')">Edit</button>
-                    <button>Reset Password</button>
-                    <button>Delete</button>
+                    <button onclick="resetPassword('${account.email}')">Reset Password</button>
+                    <button onclick="deleteAccount('${account.email}')">Delete</button>
                 </td>
             <tr>
         `
 
         tbody.innerHTML += element;
     }
+}
+
+function renderRequests(){
+    
 }
 
 function setAuthState(isAuth, user){
@@ -311,6 +355,7 @@ function setAuthState(isAuth, user){
 function editAccount(email){
     editing = true;
     editingEmail = email;
+    console.log(editingEmail)
     const user = window.db.accounts.find(account => account.email == email);
     accountsForm.elements['firstName'].value = user.firstName;
     accountsForm.elements['lastName'].value = user.lastName;
@@ -320,5 +365,83 @@ function editAccount(email){
     accountsForm.elements['verified-field'].checked = user.verified;
     document.getElementById('accounts-modal-btn').click();
 }
+
+function resetPassword(email){
+    const newPassword = prompt("Enter this account's new password. Password length must be minimum of six characters")
+
+    if(password.length < 6){
+        resetPassword(email);
+    }else{
+        const index = window.db.accounts.findIndex(account => account.email == email)
+        window.db.accounts[index].password = newPassword;
+        saveToStorage();
+    }
+}
+
+function deleteAccount(email){
+    if (email === currentUser.email){
+        alert('You cannot delete your own account!')
+        return;
+    }else{
+        
+        if(confirm(`Are you sure you want to delete this acccount?`)){
+            const accounts = window.db.accounts.filter(account => account.email != email);
+            window.db.accounts = accounts;
+            saveToStorage();
+            renderAccounts();
+        }
+    }
+}
+
+function addDepartment(){
+    alert('Not implemented.')
+}
+
+function resetAccountModal(){
+    accountsForm.elements['firstName'].value = '';
+    accountsForm.elements['lastName'].value = '';
+    accountsForm.elements['email'].value = '';
+    accountsForm.elements['password'].value = '';
+    accountsForm.elements['role'].value = '';
+    accountsForm.elements['verified-field'].checked = false;
+}
+
+function saveEmployee(){
+    const formData = new FormData(employeesForm);
+    const data = Object.fromEntries(formData);
+     const element = document.getElementById('employee-form-msg-div')
+    console.log(data)
+    for(let key of Object.keys(data)){
+        if(data[key].trim() === ''){
+           
+            element.innerHTML = 'Please fill out all fields!';
+            element.classList.remove('hide-msg')
+            return;
+        }
+    }
+    const employeeExists = window.db.employees.find(employee => employee.email == data.email)
+    if(employeeExists){
+        element.innerHTML = 'This email is already associated with an existing employee!';
+        element.classList.remove('hide-msg');
+        return;
+    }
+    const index = window.db.accounts.findIndex(account => account.email == data.email);
+
+    if(index == -1){
+        element.innerHTML = 'This email does not have an account!';
+        element.classList.remove('hide-msg')
+        return;
+    }else{
+        data.name = window.db.accounts[index].firstName + ' ' + window.db.accounts[index].lastName;
+        
+    }
+
+    element.classList.add('hide-msg');
+    window.db.employees.push(data);
+    saveToStorage();
+    document.getElementById('employee-cancel-btn').click();
+    renderEmployees();
+}
+
 
 window.addEventListener("hashchange", handleRouting);
