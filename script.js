@@ -482,8 +482,8 @@ function renderItems(){
         if(i == 0){
             element = `
                 <div class="item-div">
-                    <input type="text" name="itemName">
-                    <input type="number" name="itemQty">
+                    <input type="text" class="itemName">
+                    <input type="number" class="itemQty">
                     <button type="button" onclick="addNewItem()">+</button>
                 </div>
             `
@@ -491,7 +491,7 @@ function renderItems(){
             element = `
                 <div class="item-div">
                     <input type="text" name="itemName">
-                    <input type="number" name="itemQty">
+                    <input type="number" min="1" name="itemQty">
                     <button type="button" onclick="deleteItem(${i})">x</button>
                 </div>
             `
@@ -508,18 +508,41 @@ function deleteItem(id){
 }
 
 function saveItems(){
-    const itemDivs = document.querySelector('.item-divs');
+    const itemDivs = document.querySelectorAll('.item-div');
+
+    for(let i = 0; i < itemDivs.length; i++){
+        const item = itemDivs[i].querySelector('.itemName').value;
+        const qty = itemDivs[i].querySelector('.itemQty').value;
+
+        items[i] = {
+            name: item,
+            qty: qty
+        }
+    }
+
+    window.db.requests.push(
+        {
+            type: document.getElementById('equipment-type').value,
+            items: items,
+            status: 'Pending',
+            date: Date.now(),
+            employeeEmail: currentUser.email
+
+        }
+    )
+
+    saveToStorage()
 }
 
 function openRequestModal(){
     items = [
         {
-            itemName: '',
-            itemQty: 1,
+            name: '',
+            qty: 1,
         }
     ]
 
-    renderItems()
+    renderItems();
 }
 
 
