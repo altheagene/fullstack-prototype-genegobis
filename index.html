@@ -30,6 +30,13 @@
         </div>
     </nav>
     <main>
+       <div id="toast-el" role="toast" class="toast position-fixed p-2" data-bs-delay="3000">
+        <div class="toast-body d-flex">
+            <div role="alert" id="toast-msg"></div>
+            <button type="button" class="btn-close btn-close-black me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+            
+       </div>
         <section id="home-page" class="page active role-logged-out">
             <h1>Welcome to Full-Stack App</h1>
             <p>A static prototype before backend integration. Simualtes:</p>
@@ -53,15 +60,16 @@
             <h1>Register Account</h1>
             <form action="post" id="registration-form">
                 <label for="">First name
-                    <input name="firstName" required>
+                    <input name="firstName" type="text" required>
                 </label>
 
-                <label for="">LastName
-                    <input  name="lastName" required>
+                <label>LastName
+                    <input type="text" name="lastName" class="form-input" required>
+                    
                 </label>
 
                 <label for="">Email
-                    <input name="email" required>
+                    <input name="email" type="email">
                 </label>
 
                 <label>Password
@@ -147,30 +155,36 @@
                         </div>
 
                         <div class="modal-body">
-                            <div id="employee-form-msg-div" class="hide-msg">
+                            <div id="employee-form-msg-div" class="hide-msg form-msg border-danger text-danger">
                                 
                             </div>
+                            
                             <form action="" id="employees-form">
                                 <label for="">Employee ID<span class="text-danger">*</span>
-                                    <input type="text" name="id">
+                                    <input type="text" name="id" class="form-control" >
+                                    <span></span>
                                 </label>
 
                                 <label for="">User email <span class="text-danger">*</span>
-                                    <input type="text" name="email">
+                                    <input type="email" name="email" class="form-control" >
+                                    <span id="employee-email"></span>
                                 </label>
 
                                 <label for="">Position <span class="text-danger">*</span>
-                                    <input type="text" name="position">
+                                    <input type="text" name="position" class="form-control" >
+                                    <span></span>
                                 </label>
 
                                 <label for="">Department <span class="text-danger">*</span>
                                     <select name="department">
                                         
                                     </select>
+                                    <span></span>
                                 </label>
 
                                 <label for="">Hire Date <span class="text-danger">*</span>
-                                    <input type="date" name="hireDate">
+                                    <input type="date" name="hireDate" class="form-control">
+                                    <span></span>
                                 </label>
                             </form>
                         </div>
@@ -178,7 +192,7 @@
                         <div class="modal-footer">
                             <div class="buttons-div">
                                 <button onclick="saveEmployee()">Save</button>
-                                <button data-bs-dismiss="modal" id="employee-cancel-btn">Cancel</button>
+                                <button data-bs-dismiss="modal" id="employee-cancel-btn" onclick="resetInputs(employeesForm)">Cancel</button>
                             </div>
                         </div>
                 
@@ -238,18 +252,22 @@
                             <form id="accounts-form">
                                 <label for="">First name <span class="text-danger">*</span>
                                     <input name="firstName" type="text">
+                                    <span></span>
                                 </label>
 
                                 <label for="" name="lastName">Last name <span class="text-danger">*</span>
                                     <input name="lastName" type="text">
+                                    <span></span>
                                 </label>
 
                                 <label for="" >Email <span class="text-danger">*</span>
                                     <input type="text" name="email" >
+                                    <span id="acc-email"></span>
                                 </label>
 
                                 <label for="">Password <span class="text-danger">*</span>
                                     <input type="password" name="password">
+                                    <span></span>
                                 </label>
 
                                 <label for="">Role <span class="text-danger">*</span>
@@ -261,6 +279,7 @@
 
                                 <label for="">
                                     <input type="checkbox" id="verified-field" value="true">Verified
+                                    <span></span>
                                 </label>
                             </form>
                         </div>
@@ -268,7 +287,7 @@
                         <div class="modal-footer">
                             <div class="buttons-div">
                                 <button onclick="saveAccount()">Save</button>
-                                <button data-bs-dismiss="modal" onclick="resetAccountModal()" id="accounts-cancel-btn">Cancel</button>
+                                <button data-bs-dismiss="modal" onclick="resetInputs(accountsForm)" id="accounts-cancel-btn">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -315,14 +334,18 @@
                                 </label>
 
                                 <label for="">Items</label>
-                                <div id="item-requests-div">
-                                    <div class="item-div" id="1">
-                                        <input type="text" class="itemName">
-                                        <input type="number" min="1" class="itemQty">
-                                        <button type="button" onclick="addNewItem()">+</button>
-                                    </div>
+                                <div id="requests-msg-div" class="form-msg hide-msg">
+
                                 </div>
                             </form>
+
+                            <div id="item-requests-div">
+                                <div class="item-div" id="1">
+                                    <input type="text" class="itemName" placeholder="Item Name">
+                                    <input type="number" min="1" class="itemQty" placeholder="Qty">
+                                    <button type="button" class="btn btn-success" onclick="addNewItem()">+</button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="modal-footer">

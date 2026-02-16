@@ -11,6 +11,7 @@ const body = document.querySelector('body');
 let editing = false;
 let editingEmail;
 
+
 let itemRequests = [];
 
 const accountsForm = document.getElementById('accounts-form');
@@ -96,9 +97,21 @@ console.log('hi')
 
 let currentPage = homePage;
 //OTHER ELEMENTS
+const toastEl = document.getElementById('toast-el');
+const toastMsg = document.getElementById('toast-msg');
+const myToast = new bootstrap.Toast(toastEl);
 
+function showToast(message){
+    toastMsg.innerText = message
+    myToast.show()
+}
 
-
+const qtyInputs = document.querySelectorAll('.itemQty')
+qtyInputs.forEach(input => {
+    if (input.value <= 0){
+        input.value = 1
+    }
+});
 
 document.getElementById('registration-form')
     .addEventListener('submit', function(e){
@@ -162,9 +175,25 @@ function handleRouting(){
     currentPage.classList.add('active')
 }
 
+function checkEmptyFields(data, element){
+    for(let obj of Object.keys(data)){
+        if(data[obj].trim() == '' && obj != 'password'){
+            return false;
+        }
+    }
+    return true;
+}
+
 function handleRegistration(data){
+
+    const valid = checkEmptyFields();
+    if(!valid){
+        //please fill out all fields
+        return;
+    }
+
     const password = data.password;
-    const email = data.email;
+    const email = data.email.trim();
 
     //check password length
     if(password.length < 6){
@@ -182,11 +211,15 @@ function handleRegistration(data){
     if(!match)
         return;
 
+    //additional user-data
     data.verified = false;
     data.role = 'user'
-    const acc = window.db.accounts[window.db.accounts.length-1];
-    console.log(acc)
+    data.email = data.email.trim();
+    data.firstName = data.firstName.trim();
+    data.lastName = data.lastName.trim();
+    
     //userid will be id of last account array plus one
+    const acc = window.db.accounts[window.db.accounts.length-1];
     data.userId = acc.userId + 1;
 
     localStorage.setItem('unverified_email', email);
@@ -209,7 +242,7 @@ function handleVerification(){
 function handleLogin(data){
     console.log(data)
     console.log(window.db.accounts)
-    const user = window.db.accounts.find(account => account.email == data.email 
+    const user = window.db.accounts.find(account => account.email == data.email.trim() 
                                                         && account.password == data.password
                                                         && account.verified)
     console.log(user)
@@ -217,8 +250,10 @@ function handleLogin(data){
         localStorage.auth_token = user.email;
         setAuthState(true, user)
         document.getElementById('login-invalid').classList.add('hide-msg')
+        showToast('Logged in successfully!')
     }else{
         document.getElementById('login-invalid').classList.remove('hide-msg');
+        showToast('Invalid credentials!')
     }
     
 }
@@ -263,7 +298,7 @@ function renderEmployees(){
     if(window.db.employees.length == 0){
         const element = `
             <tr>
-              <td>No employees found</td>  
+              <td colspan='5' class='text-center'>No employees found</td>  
             </tr>
         `;
 
@@ -290,14 +325,48 @@ function renderEmployees(){
     }
 }
 
+function checkEmpty(inputs){
+    let filled = true;
+    for(let input of inputs){
+        const value = input.name == 'password' ? input.value : input.value.trim();
+        console.log(value)
+        if(value == ''){
+            input.style.borderColor = 'red'
+            input.nextElementSibling.style.color = 'red'
+            input.nextElementSibling.textContent = 'This field is required'
+            filled = false
+        }else{
+            input.style.borderColor = 'gray'
+            input.nextElementSibling.textContent = ''
+        }
+    }
+
+    return filled;
+}
 function saveAccount(){
-    console.log(accountsForm)
+    const verifiedField = document.getElementById('verified-field');
+    const inputs = accountsForm.querySelectorAll('input');
+    const check = checkEmpty(inputs)
+
+    if(!check){
+        return;
+    }
+    
     const formData = new FormData(accountsForm)
     const data = Object.fromEntries(formData);
-    const verifiedField = document.getElementById('verified-field');
-    console.log(data)
+
+    //check if email exists already!
+    const account = window.db.accounts.some(acc => acc.email == data.email.trim())
+
+    if(account && !editing){
+        const element = document.getElementById('acc-email')
+        element.textContent =  'Email already exists!';
+        element.previousElementSibling.style.borderColor = 'red';
+        return;
+    }
+
     for (let key of Object.keys(data)){
-        if(data[key] === ''){
+        if(data[key].trim() === '' && key != 'password'){
             console.log('WOW')
             document.getElementById('form-message-div').classList.remove('hide-msg')
             return;
@@ -306,28 +375,29 @@ function saveAccount(){
 
     if(verifiedField.checked){
         data.verified = true
-        console.log(data)
-       
     }else{
         data.verified = false;
-        console.log(data)
     }
     
     document.getElementById('form-message-div').classList.add('hide-msg');
 
     if(editing){
+
+        //finds the index of the account being edited and updates the values;
         const emailExists = window.db.accounts.some(account => account.email == editingEmail)
 
-        if(emailExists && data.email != editingEmail){
-            const element = document.getElementById('form-message-div')
-            element.innerText =  'Email already exists!';
-            element.classList.remove('hide-msg')
+        if(emailExists && data.email.trim() != editingEmail){
+            const element = document.getElementById('acc-email')
+            element.textContent =  'Email already exists!';
+            
             return;
+        }else{
+            element.innerText =  '';
         }
         const index = window.db.accounts.findIndex(account => account.email == editingEmail);
-        window.db.accounts[index].firstName = data.firstName;
-        window.db.accounts[index].lastName = data.lastName;
-        window.db.accounts[index].email = data.email;
+        window.db.accounts[index].firstName = data.firstName.trim();
+        window.db.accounts[index].lastName = data.lastName.trim();
+        window.db.accounts[index].email = data.email.trim();
         window.db.accounts[index].password = data.password;
         window.db.accounts[index].role = data.role;
         window.db.accounts[index].verified = data.verified;
@@ -459,34 +529,47 @@ function resetAccountModal(){
 }
 
 function saveEmployee(){
+    const check = checkEmpty(employeesForm);
+
+    if(!check){
+        return;
+    }
+
     const formData = new FormData(employeesForm);
     const data = Object.fromEntries(formData);
-    const element = document.getElementById('employee-form-msg-div')
+    const element = document.getElementById('employee-email')
     console.log(data)
-    for(let key of Object.keys(data)){
-        if(data[key].trim() === ''){
-           
-            element.innerHTML = 'Please fill out all fields!';
-            element.classList.remove('hide-msg')
-            return;
-        }
+    const valid = checkEmptyFields(data)
+    
+    if(!valid){
+        return;
     }
+
+    
+    // console.log(data)
+    // for(let key of Object.keys(data)){
+    //     if(data[key].trim() === ''){
+           
+    //         element.innerHTML = 'Please fill out all fields!';
+    //         element.classList.remove('hide-msg')
+    //         return;
+    //     }
+    // }
     const employeeExists = window.db.employees.find(employee => employee.email == data.email)
     if(employeeExists){
-        element.innerHTML = 'This email is already associated with an existing employee!';
-        element.classList.remove('hide-msg');
+        element.textContent = 'This email is already associated with an existing employee!';
+        
         return;
     }
     const index = window.db.accounts.findIndex(account => account.email == data.email);
 
     if(index == -1){
-        element.innerHTML = 'This email does not have an account!';
-        element.classList.remove('hide-msg')
+        element.textContent = 'This email does not have an account!';
         return;
     }else{
+        element.textContent = ''
         const account = window.db.accounts.find(acc => acc.email == data.email )
         data.userId = account.userId;
-
         const department = window.db.departments.find(dept => dept.name == data.department)
         data.deptId = department.id;
         
@@ -496,17 +579,26 @@ function saveEmployee(){
     window.db.employees.push(data);
     saveToStorage();
     document.getElementById('employee-cancel-btn').click();
-    renderEmployees();
+    renderEmployees(employeesForm);
+}
+
+function resetInputs(form){
+    const inputs = form.querySelectorAll('input')
+    for (let input of inputs){
+        input.value = '';
+        input.nextElementSibling.textContent = ''
+        input.style.borderColor = 'gray'
+    }
 }
 
 function addNewItem(){
     const itemRequestsDiv = document.getElementById('item-requests-div');
     const id = itemRequests.length;
     const element = `
-            <div class="item-div" id="${id}">
-                <input type="text" name="itemName">
-                <input type="number" name="itemQty">
-                <button type="button" onclick="deleteItem(${id})">x</button>
+            <div class="item-div" id="${id + 1}">
+                <input type="text" class="itemName" placeholder="Item Name">
+                <input type="number" min="1" class="itemQty" placeholder="Qty">
+                <button type="button" class="btn btn-danger" onclick="deleteItem(${id + 1})">x</button>
             </div>
     `
 
@@ -523,17 +615,17 @@ function renderItems(){
         if(i == 0){
             element = `
                 <div class="item-div">
-                    <input type="text" class="itemName">
-                    <input type="number" class="itemQty">
-                    <button type="button" onclick="addNewItem()">+</button>
+                    <input type="text" class="itemName" placeholder="Item Name">
+                    <input type="number" min="1" class="itemQty" placeholder="Qty">
+                    <button type="button" class="btn btn-success" onclick="addNewItem()">+</button>
                 </div>
             `
         }else{
             element = `
                 <div class="item-div">
-                    <input type="text" name="itemName">
-                    <input type="number" min="1" name="itemQty">
-                    <button type="button" onclick="deleteItem(${i})">x</button>
+                    <input type="text" class="itemName" placeholder="Item Name">
+                    <input type="number" min="1" class="itemQty" placeholder="Qty">
+                    <button type="button" class="btn btn-danger" onclick="deleteItem(${i + 1})">x</button>
                 </div>
             `
         }
@@ -544,27 +636,32 @@ function renderItems(){
 
 function deleteItem(id){
     //remove item element at place of id. if id is 2, remove element at index 2-1 = 1
-    itemRequests.splice(id, 1)
+    itemRequests.splice(id-1, 1)
     renderItems();
 }
 
 function saveItems(){
     //check if items have empty values
     const itemDivs = document.querySelectorAll('.item-div');
+    const msgDdiv = document.getElementById('requests-msg-div'); //error messages will be displayed here
 
     for(let i = 0; i < itemDivs.length; i++){
         const item = itemDivs[i].querySelector('.itemName').value;
         const qty = itemDivs[i].querySelector('.itemQty').value;
 
         if(item == '' || qty == ''){
-            console.log('Please fill out all fields!');
+            msgDdiv.classList.remove('hide-msg')
+           msgDdiv.innerText = 'Please fill out all fields!'
             return;
         }
+
         itemRequests[i] = {
             name: item,
             qty: qty
         }
     }
+
+    msgDdiv.classList.add('hide-msg')
     
 
     window.db.requests.push(
@@ -604,6 +701,7 @@ function renderRequests(){
         tbody.innerHTML += element
     }
 }
+
 
 function openRequestModal(){
     itemRequests = [
