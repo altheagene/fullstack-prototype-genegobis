@@ -11,7 +11,7 @@ const body = document.querySelector('body');
 let editing = false;
 let editingEmail;
 
-let items = [];
+let itemRequests = [];
 
 const accountsForm = document.getElementById('accounts-form');
 const employeesForm = document.getElementById('employees-form');
@@ -24,17 +24,17 @@ function loadFromStorage(){
     if (localStorage[STORAGE_KEY] == undefined){
         window.db.departments.push(
             {
-                id: 1,
+                deptId: 1,
                 name: 'Engineering',
                 description: 'Department of Engineering'
             }, 
             {
-                id: 2,
+                deptId: 2,
                 name: 'HR',
                 description: 'Department of Human Resources'
             })
         window.db.accounts.push({
-            id: 1,
+            userId: 1,
             firstName: 'Admin',
             lastName: 'User',
             email: 'admin@example.com',
@@ -44,6 +44,7 @@ function loadFromStorage(){
         })
         saveToStorage();
     }else{
+       
         const data = JSON.parse(localStorage[STORAGE_KEY])
         console.log('HELLO')
         window.db.accounts = data.accounts;
@@ -57,7 +58,7 @@ function loadFromStorage(){
         body.classList.remove('not-authenticated')
         body.classList.add('authenticated')
         console.log(currentUser)
-
+        document.getElementById('role').textContent = currentUser.firstName;
         if(currentUser.role == 'admin'){
             body.classList.add('is-admin')
         }
@@ -136,23 +137,26 @@ function handleRouting(){
                         currentPage = profilePage; 
                         renderProfile();
                         break;
-        case '#/requests' : currentPage = requestsPage; break;
+        case '#/requests' : 
+                        renderRequests();
+                        currentPage = requestsPage; break;
         case '#/employees' : 
-                            if(currentUser.role != 'admin')
-                                return;
-                            currentPage = employeesPage; 
-                            renderEmployees();
-                            break;
+                        if(currentUser.role != 'admin')
+                            return;
+                        currentPage = employeesPage; 
+                        renderEmployees();
+                        break;
         case '#/accounts' : 
-                            if(currentUser.role != 'admin')
-                                return;
-                            currentPage = accountsPage; 
-                            renderAccounts();
-                            break;
+                        if(currentUser.role != 'admin')
+                            return;
+                        currentPage = accountsPage; 
+                        renderAccounts();
+                        break;
         case '#/departments' : 
-                            if(currentUser.role != 'admin')
-                                return;
-                            currentPage = departmentsPage; break;
+                        if(currentUser.role != 'admin')
+                            return;
+                        renderDepartments();
+                        currentPage = departmentsPage; break;
     }
 
     currentPage.classList.add('active')
@@ -180,10 +184,10 @@ function handleRegistration(data){
 
     data.verified = false;
     data.role = 'user'
-    const length = window.db.accounts.length;
-
-    //userid will be length of current accounts array plus one
-    data.id = length + 1;
+    const acc = window.db.accounts[window.db.accounts.length-1];
+    console.log(acc)
+    //userid will be id of last account array plus one
+    data.userId = acc.userId + 1;
 
     localStorage.setItem('unverified_email', email);
     console.log(window.db.accounts)
@@ -233,6 +237,26 @@ function renderProfile(){
     document.getElementById('profile-role').innerText = currentUser.role;
 }
 
+function renderDepartments(){
+    const tbody = document.getElementById('dept-tbody');
+    tbody.innerHTML = ''
+    for (let i = 0; i < window.db.departments.length; i++){
+        
+        const element = `
+            <tr>
+                <td>${window.db.departments[i].name}</td>
+                <td>${window.db.departments[i].description}</td>
+                <td>
+                    <button class="btn btn-outline-primary">Edit</button>
+                    <button class="btn btn-outline-danger">Delete</button>
+                </td>
+            </tr>
+        `
+
+        tbody.innerHTML += element;
+    }
+}
+
 function renderEmployees(){
     const tbody = document.getElementById('employees-tbody');
     tbody.innerHTML =''
@@ -247,13 +271,19 @@ function renderEmployees(){
 
     }
     for(let employee of window.db.employees){
+        const user = window.db.accounts.find(acc => acc.userId == employee.userId);
+        const department = window.db.departments.find(dept => dept.id == employee.deptId)
         const element = `
             <tr>
                 <td>${employee.id}</td>
-                <td>${employee.name}</td>
-                <td>${employee.email}</td>
+                <td>${user.firstName} ${user.lastName}</td>
                 <td>${employee.position}</td?>
-            <tr>
+                <td>${department.name}</td>
+                <td>
+                    <button class="btn btn-outline-primary">Edit</button>
+                    <button class="btn btn-outline-warning">Delete</button>
+                </td>
+            </tr>
         `
 
         tbody.innerHTML += element
@@ -303,6 +333,8 @@ function saveAccount(){
         window.db.accounts[index].verified = data.verified;
         saveToStorage()
     }else{
+        const acc = window.db.accounts[window.db.accounts.length - 1];
+        data.userId = acc.userId + 1;
         window.db.accounts.push(data);
     }
     document.getElementById('accounts-cancel-btn').click();
@@ -324,11 +356,11 @@ function renderAccounts(){
                 <td>${account.role == 'admin' ? 'Admin' : 'User'}</td>
                 <td>${account.verified ? '✅' : ' ❌'}</td>
                 <td>
-                    <button onclick="editAccount('${account.email}')">Edit</button>
-                    <button onclick="resetPassword('${account.email}')">Reset Password</button>
-                    <button onclick="deleteAccount('${account.email}')">Delete</button>
+                    <button class="btn btn-outline-primary" onclick="editAccount('${account.email}')">Edit</button>
+                    <button class="btn btn-outline-warning" onclick="resetPassword('${account.email}')">Reset Password</button>
+                    <button class="btn btn-outline-danger" onclick="deleteAccount('${account.email}')">Delete</button>
                 </td>
-            <tr>
+            </tr>
         `
 
         tbody.innerHTML += element;
@@ -350,7 +382,8 @@ function setAuthState(isAuth, user){
     currentUser = user;
     if(isAuth){
         body.classList.remove('not-authenticated');
-        body.classList.add('authenticated')
+        body.classList.add('authenticated');
+        document.getElementById('role').textContent = currentUser.firstName
         navigateTo('#/profile')
     }else{
         body.classList.remove('authenticated');
@@ -360,7 +393,7 @@ function setAuthState(isAuth, user){
     
     if(user.role == 'admin'){
         body.classList.add('is-admin');
-        document.getElementById('role').innerText = 'Admin'
+        
     }else{
         document.getElementById('role').innerText = 'User'
         body.classList.remove('is-admin');
@@ -391,6 +424,10 @@ function resetPassword(email){
         window.db.accounts[index].password = newPassword;
         saveToStorage();
     }
+}
+
+function editProfile(){
+    alert('Not implemented.')
 }
 
 function deleteAccount(email){
@@ -424,7 +461,7 @@ function resetAccountModal(){
 function saveEmployee(){
     const formData = new FormData(employeesForm);
     const data = Object.fromEntries(formData);
-     const element = document.getElementById('employee-form-msg-div')
+    const element = document.getElementById('employee-form-msg-div')
     console.log(data)
     for(let key of Object.keys(data)){
         if(data[key].trim() === ''){
@@ -447,7 +484,11 @@ function saveEmployee(){
         element.classList.remove('hide-msg')
         return;
     }else{
-        data.name = window.db.accounts[index].firstName + ' ' + window.db.accounts[index].lastName;
+        const account = window.db.accounts.find(acc => acc.email == data.email )
+        data.userId = account.userId;
+
+        const department = window.db.departments.find(dept => dept.name == data.department)
+        data.deptId = department.id;
         
     }
 
@@ -460,7 +501,7 @@ function saveEmployee(){
 
 function addNewItem(){
     const itemRequestsDiv = document.getElementById('item-requests-div');
-    const id = items.length;
+    const id = itemRequests.length;
     const element = `
             <div class="item-div" id="${id}">
                 <input type="text" name="itemName">
@@ -470,14 +511,14 @@ function addNewItem(){
     `
 
     itemRequestsDiv.innerHTML += element;
-    items.push({})
+    itemRequests.push({})
     
 }
 
 function renderItems(){
     const itemRequestsDiv = document.getElementById('item-requests-div');
     itemRequestsDiv.innerHTML = '';
-    for (let i = 0; i < items.length; i++){
+    for (let i = 0; i < itemRequests.length; i++){
         let element;
         if(i == 0){
             element = `
@@ -503,27 +544,33 @@ function renderItems(){
 
 function deleteItem(id){
     //remove item element at place of id. if id is 2, remove element at index 2-1 = 1
-    items.splice(id, 1)
+    itemRequests.splice(id, 1)
     renderItems();
 }
 
 function saveItems(){
+    //check if items have empty values
     const itemDivs = document.querySelectorAll('.item-div');
 
     for(let i = 0; i < itemDivs.length; i++){
         const item = itemDivs[i].querySelector('.itemName').value;
         const qty = itemDivs[i].querySelector('.itemQty').value;
 
-        items[i] = {
+        if(item == '' || qty == ''){
+            console.log('Please fill out all fields!');
+            return;
+        }
+        itemRequests[i] = {
             name: item,
             qty: qty
         }
     }
+    
 
     window.db.requests.push(
         {
             type: document.getElementById('equipment-type').value,
-            items: items,
+            items: itemRequests,
             status: 'Pending',
             date: Date.now(),
             employeeEmail: currentUser.email
@@ -531,11 +578,35 @@ function saveItems(){
         }
     )
 
-    saveToStorage()
+    saveToStorage();
+    document.getElementById('request-close-btn').click();
+    renderRequests();
+}
+
+
+
+function renderRequests(){
+    const myRequests = window.db.requests.filter(req => req.employeeEmail == currentUser.email)
+
+    const tbody = document.getElementById('requests-tbody');
+    tbody.innerHTML = ''
+    for (let request of myRequests){
+        const element = `
+            <tr>
+                <td>${request.employeeEmail}</td>
+                <td>${request.type}</td>
+                <td>${request.date}</td>
+                <td>${request.status}</td>
+
+            </tr>
+        `
+
+        tbody.innerHTML += element
+    }
 }
 
 function openRequestModal(){
-    items = [
+    itemRequests = [
         {
             name: '',
             qty: 1,
