@@ -11,24 +11,22 @@
 </head>
 <body class="not-authenticated">
     <nav class="px-3">
-        <p>Full-Stack App Genegobis</p>
+        <p class="fw-bold fs-4">Full-Stack App Genegobis</p>
         <ul class="nav-list role-logged-out">
             <li onclick="navigateTo('#/login')">Login</li>
             <li onclick="navigateTo('#/register')">Register</li>
         </ul>
         
-        <div class="role-logged-in">
-            <p id="role"></p>
-            <div class="dropdown">
-                <ul>
-                    <li  onclick="navigateTo('#/profile')">Profile</li>
-                    <li onclick="navigateTo('#/employees')"class="role-admin" >Employees</li>
-                    <li onclick="navigateTo('#/accounts')"class="role-admin">Accounts</li>
-                    <li onclick="navigateTo('#/departments')"class="role-admin">Departments</li>
-                    <li onclick="navigateTo('#/requests')">MyRequests</li>
-                    <li onclick="handleLogout()">Logout</li>
+        <div class="dropdown role-logged-in">
+            <button id="role" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                    <li onclick="navigateTo('#/profile')"><a class="dropdown-item">Profile</a></li>
+                    <li onclick="navigateTo('#/employees')"class="role-admin" ><a class="dropdown-item">Employees</a></li>
+                    <li onclick="navigateTo('#/accounts')"class="role-admin"><a class="dropdown-item">Accounts</a></li>
+                    <li onclick="navigateTo('#/departments')"class="role-admin"><a class="dropdown-item">Departments</a></li>
+                    <li onclick="navigateTo('#/requests')"><a class="dropdown-item">My Requests</a></li>
+                    <li onclick="handleLogout()"><a class="dropdown-item text-danger">Logout</a></li>
                 </ul>
-            </div>
         </div>
     </nav>
     <main>
@@ -117,7 +115,7 @@
                 <p>Email: <span id="profile-email"></span></p>
                 <p>Role: <span id="profile-role"></span></p>
                 <div class="buttons-div">
-                    <button>Edit Profile</button>
+                    <button onclick="editProfile()">Edit Profile</button>
                 </div>
             </div>
         </section>
@@ -125,10 +123,10 @@
         <section id="employees-page" class="page">
             <div class="page-header">
                 <h1>Employees</h1>
-                <button data-bs-toggle="modal"  data-bs-target="#employees-form-modal">+ Add Employee</button>
+                <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#employees-form-modal">+ Add Employee</button>
             </div>
 
-            <table>
+            <table class="table table-striped">
                 <thead>
                     <th>ID</th>
                     <th>Name</th>
@@ -192,25 +190,28 @@
         <section id="departments-page" class="role-logged-in page ">
             <div class="page-header">
                 <h1>Departments</h1>
-                <button onclick="addDepartment()">+ Add Department</button>
+                <button class="btn btn-success" onclick="addDepartment()">+ Add Department</button>
             </div>
 
-            <table>
-                <tr>
+            <table class="table table-striped">
+                <thead>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Actions</th>
-                </tr>
+                </thead>
+                <tbody id="dept-tbody">
+
+                </tbody>
             </table>
         </section>
 
         <section id="accounts-page" class="role-logged-in page ">
             <div class="page-header">
                 <h1>Accounts</h1>
-                <button data-bs-toggle="modal" data-bs-target="#accounts-modal" id="accounts-modal-btn">+ Add Account</button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#accounts-modal" id="accounts-modal-btn">+ Add Account</button>
             </div>
 
-            <table>
+            <table class="table table-striped">
                 <thead>
                     <th>Name</th>
                     <th>Email</th>
@@ -280,22 +281,33 @@
         <section id="requests-page" class="role-logged-in page">
             <div class="page-header">
                 <h1>My Requests</h1>
-                <button data-bs-target="#request-modal" data-bs-toggle="modal">+ New Request</button>
+                <button class="btn btn-success" data-bs-target="#request-modal" data-bs-toggle="modal" onclick="openRequestModal()">+ New Request</button>
             </div>
 
             <button>Create One</button>
+            <table class="table table-striped">
+                <thead>
+                    <th>User</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </thead>
+                <tbody id="requests-tbody">
+
+                </tbody>
+            </table>
 
             <div class="modal" id="request-modal">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">New Request</h1>
                         </div>
 
                         <div class="modal-body">
                             <form action="">
                                 <label for="">Type
-                                    <select name="" id="" name="type">
+                                    <select name="" id="equipment-type" name="type">
                                         <option value="equipment">Equipment</option>
                                         <option value="leave">Leave</option>
                                         <option value="resources">Resources</option>
@@ -303,18 +315,20 @@
                                 </label>
 
                                 <label for="">Items</label>
-                                <div class="item-div">
-                                    <input type="text">
-                                    <input type="number">
-                                    <button>+</button>
+                                <div id="item-requests-div">
+                                    <div class="item-div" id="1">
+                                        <input type="text" class="itemName">
+                                        <input type="number" min="1" class="itemQty">
+                                        <button type="button" onclick="addNewItem()">+</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
 
                         <div class="modal-footer">
                             <div class="buttons-div">
-                                <button >Save</button>
-                                <button data-bs-dismiss="modal" >Cancel</button>
+                                <button onclick="saveItems()">Save</button>
+                                <button data-bs-dismiss="modal" id="request-close-btn">Cancel</button>
                             </div>
                         </div>
                     </div>
