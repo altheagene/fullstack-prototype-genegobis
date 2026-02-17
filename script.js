@@ -868,7 +868,7 @@ function addNewItem(){
             </div>
     `
 
-    itemRequestsDiv.innerHTML += element;
+    itemRequestsDiv.appendChild(element);
     itemRequests.push({})
     
 }
@@ -903,7 +903,7 @@ function renderItems(){
 function deleteItem(id){
     //remove item element at place of id. if id is 2, remove element at index 2-1 = 1
     itemRequests.splice(id-1, 1)
-    renderItems();
+    document.getElementById(`${id}`).remove();
 }
 
 function saveItems(){
