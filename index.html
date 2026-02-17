@@ -322,19 +322,23 @@
                                 <div id="acc-email" class="text-danger input-msg"></div>
 
 
-                                <label for="password" id="account-label-pass">
-                                    Password <span class="text-danger">*</span>
-                                </label>
+                                <div id="account-label-pass">
+                                    <label for="password">
+                                        Password <span class="text-danger">*</span>
+                                    </label>
 
-                                <div class="position-relative">
-                                    <input id="account-password" type="password" name="password" style="padding-right: 35px;">
-                                    <div id="account-pass-msg" class="text-danger input-msg"></div>
-                                    <button type="button"
-                                            id="toggleAccountPassword"
-                                            class="position-absolute top-0 end-0">
-                                        <span id="eyeIcon" class="bi bi-eye text-black"></span>
-                                    </button>
+                                    <div class="position-relative">
+                                        <input id="account-password" type="password" name="password" style="padding-right: 35px;">
+                                        <div id="account-pass-msg" class="text-danger input-msg"></div>
+                                        <button type="button"
+                                                id="toggleAccountPassword"
+                                                class="position-absolute top-0 end-0">
+                                            <span id="eyeIcon" class="bi bi-eye text-black"></span>
+                                        </button>
+                                    </div>
                                 </div>
+
+                                
 
 
                                 <label for="role">
@@ -350,8 +354,9 @@
                                 <label for="verified-field">
                                     <input type="checkbox" id="verified-field" value="true">
                                     Verified
+                                    <div class="text-danger input-msg"></div>
                                 </label>
-                                <div class="text-danger input-msg"></div>
+                                
 
                             </form>
                         </div>

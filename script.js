@@ -315,15 +315,15 @@ function checkEmpty(inputs){
     let filled = true;
     for(let input of inputs){
         const value = input.type == 'password' ? input.value : input.value.trim();
-        
+        console.log(value)
         if(input.type != 'checkbox' && value == ''){
             input.style.borderColor = 'red'
             input.nextElementSibling.style.color = 'red'
-            input.nextElementSibling.innerText = 'This field is required'
+            input.nextElementSibling.textContent = 'This field is required'
             filled = false
         }else{
             input.style.borderColor = 'gray'
-            input.nextElementSibling.innerText = ''
+            input.nextElementSibling.textContent = ''
         }
     }
 
@@ -552,7 +552,7 @@ function saveAccount(){
     
     document.getElementById('form-message-div').classList.add('hide-msg');
 
-    if(editing){
+    if(editing && status){
         //finds the index of the account being edited and updates the values;
         const emailExists = window.db.accounts.some(account => account.email == editingEmail)
 
@@ -569,24 +569,24 @@ function saveAccount(){
         window.db.accounts[index].password = data.password;
         window.db.accounts[index].role = data.role;
         window.db.accounts[index].verified = data.verified;
-        saveToStorage()
-    }else{
+    }else if(!editing && status){
         const acc = window.db.accounts[window.db.accounts.length - 1];
         data.userId = acc.userId + 1;
         window.db.accounts.push(data);
+       
     }
 
-   
-
-    document.getElementById('accounts-cancel-btn').click();
-    saveToStorage();
-    renderAccounts();
-
-    if(editing){
-        showToast("Successfully saved changes!", true);
-    }else{
-        showToast("Successfully added new account!", true);
+    if(status){
+        saveToStorage();
+        document.getElementById('accounts-cancel-btn').click();
+        renderAccounts();
+        if(editing){
+            showToast("Successfully saved changes!", true);
+        }else{
+            showToast("Successfully added new account!", true);
+        }
     }
+
 
     editing = false; 
 }
