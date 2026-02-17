@@ -791,6 +791,7 @@ function renderEmployees(){
 }
 
 function renderDeptDropdown(){
+     employeesForm.elements['deptId'].innerHTML = ''
     for(let department of window.db.departments){
         const element = `
             <option value=${department.deptId}>${department.name}</option>
