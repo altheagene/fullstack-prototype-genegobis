@@ -359,6 +359,7 @@ function handleRegistration(data){
     const emailErrMsg = document.getElementById('email-error-msg')
     const check = checkEmpty(registrationForm.querySelectorAll('input'))
     let status = true;
+    data.email = data.email.trim().toLowerCase();
 
     if(!check){
         return;
@@ -400,7 +401,7 @@ function handleRegistration(data){
     //additional user-data & trim text fields
     data.verified = false;
     data.role = 'user'
-    data.email = data.email.trim();
+    data.email = data.email.trim().toLowerCase();
     data.firstName = data.firstName.trim();
     data.lastName = data.lastName.trim();
     
@@ -434,8 +435,7 @@ function handleLogin(data){
         return;
     }
 
-    console.log(data)
-    console.log(window.db.accounts)
+    data.email = data.email.trim().toLowerCase();
     const user = window.db.accounts.find(account => account.email == data.email.trim() 
                                                         && account.password == data.password
                                                         && account.verified)
@@ -521,6 +521,7 @@ function saveAccount(){
     
     const formData = new FormData(accountsForm)
     const data = Object.fromEntries(formData);
+    data.email = data.email.trim().toLowerCase();
 
     //validate email format
     const validEmail = emailValidation(data.email.trim());
@@ -722,6 +723,12 @@ function saveEmployee(){
     saveToStorage();
     document.getElementById('employee-cancel-btn').click();
     renderEmployees(employeesForm);
+
+    if(editing){
+            showToast("Successfully saved changes!", true);
+        }else{
+            showToast("Successfully added new employee!", true);
+        }
     editing = false;
 }
 
