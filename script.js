@@ -46,6 +46,32 @@ const saveAccountBtn = document.getElementById('save-account');
 const saveEmployeeBtn = document.getElementById('save-employee');
 const saveRequestBtn = document.getElementById('save-request');
 
+
+//OTHER ELEMENTS
+const verificationBtn = document.getElementById('verification-btn');
+const getStartedBtn = document.getElementById('get-started-btn');
+const cancelRegisterBtn = document.getElementById('cancel-register-btn');
+const cancelLoginBtn = document.getElementById('login-cancel-btn');
+
+//DYNAMIC STYLING
+const buttons = document.querySelectorAll('button');
+buttons.forEach(button => {
+    button.classList.add('btn')
+})
+
+//EVENT LISTENERS
+verificationBtn.addEventListener('click', handleVerification)
+getStartedBtn.addEventListener('click', () => {
+    navigateTo('#/register');
+})
+
+cancelRegisterBtn.addEventListener('click', () => {
+navigateTo('#/')
+})
+
+cancelLoginBtn.addEventListener('click', () => {
+    navigateTo('#/')
+})
 saveAccountBtn.addEventListener("click", saveAccount)
 saveEmployeeBtn.addEventListener("click", saveEmployee)
 saveRequestBtn.addEventListener("click", saveItems)
@@ -184,9 +210,13 @@ function handleRouting(){
     console.log('HIE HOW ARE YA')
 
     switch (hash){
-        case '#/home': currentPage = homePage;break;
-        case '#/login': currentPage = loginPage; break;
-        case '#/register' : currentPage = registerPage; break;
+        case '#/': currentPage = homePage;break;
+        case '#/login': 
+            resetInputs(loginForm)
+            currentPage = loginPage; break;
+        case '#/register' :
+            resetInputs(registrationForm) 
+            currentPage = registerPage; break;
         case '#/verify-email' : currentPage = verifyEmailPage; 
                                 document.getElementById('unverified-email').innerText = localStorage.getItem('unverified_email')
                                 break;
@@ -244,7 +274,6 @@ function checkEmpty(inputs){
 function setAuthState(isAuth, user){
     currentUser = user;
     if(isAuth){
-        document.getElementById('role').textContent = currentUser.firstName;
         body.classList.remove('not-authenticated');
         body.classList.add('authenticated');
         document.getElementById('role').textContent = currentUser.firstName
@@ -259,7 +288,6 @@ function setAuthState(isAuth, user){
         body.classList.add('is-admin');
         
     }else{
-        document.getElementById('role').innerText = 'User'
         body.classList.remove('is-admin');
     }  
 }
@@ -327,10 +355,12 @@ function handleRegistration(data){
 
 function handleVerification(){
     const unverifiedEmail = localStorage.getItem('unverified_email');
+    const emailVerifiedMsg = document.getElementById('email-verified-msg')
     console.log(window.db.accounts)
     let index = window.db.accounts.findIndex((account) => account.email == unverifiedEmail)
     window.db.accounts[index].verified = true
     saveToStorage();
+    emailVerifiedMsg.classList.remove('hide-msg')
     navigateTo('#/login')
 }
 
@@ -361,7 +391,7 @@ function handleLogin(data){
 function handleLogout(){
     localStorage.removeItem("auth_token")
     setAuthState(false)
-    navigateTo('#/home');
+    navigateTo('#/');
 }
 
 function renderProfile(){

@@ -47,11 +47,14 @@
                 <li>CRUD for Employees, Departments, Requests</li>
             </ul>
 
-            <div id="home-note-div" class="p-2 rounded-2">
-                <p>Note: All data is stored in localStorage. Refresh to reset</p>
+            <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <div>
+                    <strong>Note:</strong> All data is stored in <code>localStorage</code>. Refresh to reset.
+                </div>
             </div>
             <div class="buttons-div">
-                <button id="get-started-btn">Get Started</button>
+                <button class="btn-primary" id="get-started-btn">Get Started -></button>
             </div>
             
         </section>
@@ -81,28 +84,37 @@
                 <!-- <p id="pass-error-msg" class="hide-msg text-danger">Password must be at least 6 characters long!</p> -->
 
                 <div class="buttons-div">
-                    <button type="submit" >Sign Up</button>
-                    <button>Cancel</button>
+                    <button type="submit" class="btn-primary">Sign Up</button>
+                    <button type="button" id="cancel-register-btn" class="btn-outline-secondary">Cancel</button>
+                </div>
                 </div>
             </form>
         </section>
 
         <section id="verify-email-page" class="page role-logged-out">
             <h1>Verify Your Email</h1>
-            <div>
-                <p>A verification link has been sent to <span id="unverified-email"></span></p>
+            <div class="alert alert-success mt-3" role="alert">
+                <i class="bi bi-envelope-fill me-2"></i>
+                A verification link has been sent to 
+                <strong id="unverified-email"></strong>
             </div>
             <p>For demo purposes, click below to simulate verification:</p>
             <div class="buttons-div">
-                <button onclick="handleVerification()">Simulate Email Verification</button>
-                <button>Go to Login</button>
+                <button id="verification-btn" class="btn-success text-white">Simulate Email Verification</button>
+                <button class="btn-outline-secondary">Go to Login</button>
             </div>
         </section>
 
         <section id="login-page" class="page">
             <h1>Login</h1>
-            <div id="login-invalid" class="hide-msg">
+            <!-- <div id="login-invalid" class="hide-msg">
                 <p>Invalid credentials!</p>
+            </div> -->
+            <div id="email-verified-msg" 
+                class="alert alert-success mt-3 hide-msg" 
+                role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                Email verified! You may now log in.
             </div>
             <form action="" id="login-form">
                 <label for="email">Email
@@ -115,8 +127,8 @@
                 </label>
 
                 <div class="buttons-div">
-                    <button type="submit">Login</button>
-                    <button type="button">Cancel</button>
+                    <button type="submit" class="btn-primary">Login</button>
+                    <button type="button" id="login-cancel-btn" class="btn-outline-secondary">Cancel</button>
                 </div>
             </form>
         </section>
