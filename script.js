@@ -114,6 +114,35 @@ employeesModalBtn.addEventListener("click", () => {
     resetInputs(employeesForm)
 })
 
+//==========================TOGGLE PASSWORDS=====================
+
+// Register page password toggle
+const registerPassword = document.getElementById("register-password");
+const toggleRegister = document.getElementById("toggleRegisterPassword");
+
+toggleRegister.addEventListener("click", () => {
+    registerPassword.type = registerPassword.type === "password" ? "text" : "password";
+});
+
+// Login page password toggle
+const loginPassword = document.getElementById("login-password");
+const toggleLogin = document.getElementById("toggleLoginPassword");
+
+toggleLogin.addEventListener("click", () => {
+    loginPassword.type = loginPassword.type === "password" ? "text" : "password";
+});
+
+
+// Accounts modal password toggle
+const accountPassword = document.getElementById("account-password");
+const toggleAccount = document.getElementById("toggleAccountPassword");
+
+toggleAccount.addEventListener("click", () => {
+    accountPassword.type = accountPassword.type === "password" ? "text" : "password";
+});
+
+
+
 let currentUser = null;
 window.location.hash = '#/'
 const STORAGE_KEY = 'ipt_demo_v1'
@@ -285,7 +314,7 @@ function handleRouting(){
 function checkEmpty(inputs){
     let filled = true;
     for(let input of inputs){
-        const value = input.name == 'password' ? input.value : input.value.trim();
+        const value = input.type == 'password' ? input.value : input.value.trim();
         
         if(input.type != 'checkbox' && value == ''){
             input.style.borderColor = 'red'
@@ -392,7 +421,8 @@ function handleVerification(){
     let index = window.db.accounts.findIndex((account) => account.email == unverifiedEmail)
     window.db.accounts[index].verified = true
     saveToStorage();
-    emailVerifiedMsg.classList.remove('hide-msg')
+    emailVerifiedMsg.classList.remove('hide-msg');
+    localStorage.removeItem('unverified_email')
     navigateTo('#/login')
 }
 
@@ -417,7 +447,8 @@ function handleLogin(data){
     }else{  
         showToast('Invalid credentials!',false)
     }
-    
+
+    document.getElementById('email-verified-msg').classList.add('hide-msg')
 }
 
 function handleLogout(){
@@ -454,6 +485,11 @@ function editProfile(){
 function resetInputs(form){
     const inputs = form.querySelectorAll('input')
     for (let input of inputs){
+
+        if(input.type == 'checkbox'){
+            input.checked = false;
+        }
+
         input.value = '';
         input.nextElementSibling.textContent = ''
         input.style.borderColor = 'gray'
@@ -503,7 +539,7 @@ function saveAccount(){
     }
 
      //password validation
-    if(!passwordValidation(data.password)){
+    if(!passwordValidation(data.password.trim())){
         document.getElementById('account-pass-msg').textContent = 'Password must be 6 characters in length!'
         return;
     }
@@ -587,9 +623,10 @@ function editAccount(email){
 
 function resetPassword(email){
     const newPassword = prompt("Enter this account's new password. Password length must be minimum of six characters")
-
-    if(passwordValidation()){
-        resetPassword(email);
+    const valid = passwordValidation(newPassword)
+    if(!valid){
+        alert('Invalid password. Password must be 6 characters long.');
+        return;
     }else{
         const index = window.db.accounts.findIndex(account => account.email == email)
         window.db.accounts[index].password = newPassword;
