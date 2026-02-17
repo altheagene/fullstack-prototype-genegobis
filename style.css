@@ -99,8 +99,9 @@ section{
 table{
     width: 100%;
     min-width: 600px;
-    margin-bottom: 1rem;
+    margin: 2rem 0;
 }
+
 
 
 /* =============== HOME =============== */
@@ -126,8 +127,11 @@ form{
     width: 100%;
 }
 
-label{
+label {
     width: 100%;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: #495057;
 }
 
 form input[type='text'], input[type='email'], input[type='password'], input[type='date'], select{
@@ -137,6 +141,7 @@ form input[type='text'], input[type='email'], input[type='password'], input[type
     padding: 0.5rem;
     border-radius: 5px;
     border: 1px solid #4040409e;
+    margin-top: 0.5rem;
 }
 
 option{

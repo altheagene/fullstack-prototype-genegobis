@@ -18,6 +18,25 @@ const myAccModal = new bootstrap.Modal(accountModal);
 const employeeModal = document.getElementById('employees-modal');
 const myEmployeeModal = new bootstrap.Modal(employeeModal);
 
+const requestModal = document.getElementById('request-modal');
+const myRequestModal = new bootstrap.Modal(requestModal);
+
+const modalArr = document.querySelectorAll('.modal');
+
+modalArr.forEach(modal => modal.addEventListener('show.bs.modal', () => {
+    modal.querySelector('.modal-title').textContent = editing ? 'Edit' : 'Add'
+}))
+
+modalArr.forEach(modal => modal.addEventListener('hidden.bs.modal', () => {
+   editing = false
+}))
+
+
+modalArr.forEach(modal => modal.addEventListener('hide.bs.modal', () => {
+    modal.querySelector('.modal-title').textContent = 'Add'
+}))
+
+
 
 //FORM ELEMENTS
 const accountsForm = document.getElementById('accounts-form');
@@ -53,16 +72,29 @@ const getStartedBtn = document.getElementById('get-started-btn');
 const cancelRegisterBtn = document.getElementById('cancel-register-btn');
 const cancelLoginBtn = document.getElementById('login-cancel-btn');
 
+
 //DYNAMIC STYLING
 const buttons = document.querySelectorAll('button');
 buttons.forEach(button => {
     button.classList.add('btn')
 })
 
+const labels = document.querySelectorAll('label');
+labels.forEach(label => {
+    label.classList.add('form-label')
+})
+
 //EVENT LISTENERS
 verificationBtn.addEventListener('click', handleVerification)
 getStartedBtn.addEventListener('click', () => {
     navigateTo('#/register');
+})
+
+const modals = document.querySelectorAll('.modal');
+modals.forEach(dialog => {
+    dialog.addEventListener('hidde.bs.modal', () => {
+        editing = false
+    })
 })
 
 cancelRegisterBtn.addEventListener('click', () => {
@@ -439,7 +471,8 @@ window.addEventListener("hashchange", handleRouting);
 // ===================== ACCOUNTS-JS =======================
 
 function saveAccount(){
-    document.getElementById('account-label-pass').classList.remove('hide-msg')
+    if(!editing)
+        document.getElementById('account-label-pass').classList.remove('hide-msg')
     const verifiedField = document.getElementById('verified-field');
     const inputs = accountsForm.querySelectorAll('input');
     const check = checkEmpty(inputs);
@@ -731,30 +764,40 @@ function renderRequests(){
     const tbody = document.getElementById('requests-tbody');
     tbody.innerHTML = ''
 
-    if(window.db.requests.length == 0){
-        const element = `
-            <tr>
-              <td colspan='5' class='text-center'>No requests found</td>  
-            </tr>
-        `;
+    // if(myRequests.length == 0){
+    //     const element = `
+    //         <tr>
+    //           <td colspan='5' class='text-center'>No requests found</td>  
+    //         </tr>
+    //     `;
 
-        tbody.innerHTML = element;
-        return;
+    //     tbody.innerHTML = element;
+    //     return;
+    // }
+
+    if(myRequests.length > 0){
+        document.getElementById('no-requests-div').classList.add('hide-msg')
+        document.getElementById('requests-table').classList.remove('hide-msg')
+        for (let request of myRequests){
+            const element = `
+                <tr>
+                    <td>${request.requestId}</td>
+                    <td>${request.type}</td>
+                    <td>${request.date}</td>
+                    <td><span class="badge ${request.status == 'Pending' ? "bg-warning" : 
+                        request.status == 'Approved' ? 'bg-success' : 'bg-danger'
+                    }">${request.status} </span></td>
+
+                </tr>
+            `
+
+            tbody.innerHTML += element
+        }   
+    }else{
+        document.getElementById('no-requests-div').classList.remove('hide-msg')
+        document.getElementById('requests-table').classList.add('hide-msg')
     }
     
-    for (let request of myRequests){
-        const element = `
-            <tr>
-                <td>${request.employeeEmail}</td>
-                <td>${request.type}</td>
-                <td>${request.date}</td>
-                <td>${request.status}</td>
-
-            </tr>
-        `
-
-        tbody.innerHTML += element
-    }
 }
 
 
@@ -844,10 +887,11 @@ function saveItems(){
 
     window.db.requests.push(
         {
+            requestId: window.db.requests.length + 1,
             type: document.getElementById('equipment-type').value,
             items: itemRequests,
             status: 'Pending',
-            date: Date.now(),
+            date: new Date().toISOString().split('T')[0],
             employeeEmail: currentUser.email
 
         }
