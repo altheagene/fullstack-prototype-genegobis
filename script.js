@@ -630,9 +630,11 @@ function deleteAccount(email){
         return;
     }else{
         
-        if(confirm(`Are you sure you want to delete this acccount?`)){
+        if(confirm(`Are you sure you want to delete this acccount? Deleting so will also delete the employee associated with this account.`)){
             const accounts = window.db.accounts.filter(account => account.email != email);
+            const employees = window.db.employees.filter(emp => emp.email != email)
             window.db.accounts = accounts;
+            window.db.employees = employees
             saveToStorage();
             renderAccounts();
         }
