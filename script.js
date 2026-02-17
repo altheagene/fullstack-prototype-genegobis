@@ -11,17 +11,50 @@ const requestsPage = document.getElementById('requests-page');
 const body = document.querySelector('body');
 
 let currentPage = homePage;
-//OTHER ELEMENTS
+//MODAL ELEMENTS
 const accountModal = document.getElementById('accounts-modal');
 const myAccModal = new bootstrap.Modal(accountModal);
 
 const employeeModal = document.getElementById('employees-modal');
 const myEmployeeModal = new bootstrap.Modal(employeeModal);
 
+
+//FORM ELEMENTS
 const accountsForm = document.getElementById('accounts-form');
 const employeesForm = document.getElementById('employees-form');
 const registrationForm = document.getElementById('registration-form');
 const loginForm = document.getElementById('login-form')
+
+//OPEN MODAL BUTTON ELEMENTS
+const accountsModalBtn = document.getElementById('accounts-modal-btn');
+const requestsModalBtn = document.getElementById('requests-modal-btn');
+const employeesModalBtn = document.getElementById('employees-modal-btn');
+
+
+//EVENT LISTENERS FOR MODAL OPENING BUTTONS
+accountsModalBtn.addEventListener("click", () => {
+    document.getElementById('account-label-pass').classList.remove('hide-msg')
+    resetInputs(accountsForm);
+})
+
+employeesModalBtn.addEventListener("click", () => {
+    resetInputs(employeesForm)
+})
+
+//MODAL SAVE MODAL BTNS
+const saveAccountBtn = document.getElementById('save-account');
+const saveEmployeeBtn = document.getElementById('save-employee');
+const saveRequestBtn = document.getElementById('save-request');
+
+saveAccountBtn.addEventListener("click", saveAccount)
+saveEmployeeBtn.addEventListener("click", saveEmployee)
+saveRequestBtn.addEventListener("click", saveItems)
+
+requestsModalBtn.addEventListener("click", openRequestModal);
+
+employeesModalBtn.addEventListener("click", () => {
+    resetInputs(employeesForm)
+})
 
 let currentUser = null;
 window.location.hash = '#/'
@@ -191,7 +224,7 @@ function checkEmpty(inputs){
     let filled = true;
     for(let input of inputs){
         const value = input.name == 'password' ? input.value : input.value.trim();
-        console.log(value)
+        
         if(input.type != 'checkbox' && value == ''){
             input.style.borderColor = 'red'
             input.nextElementSibling.style.color = 'red'
@@ -265,7 +298,6 @@ function handleRegistration(data){
     //check password length
     if(password.length < 6){
         //show error message the password must be 6 characters long
-        console.log(password.length)
         passwordErrMsg.innerText = 'Password must be atleast six(6) characters in length';
         status = false;
         return;
@@ -377,10 +409,12 @@ window.addEventListener("hashchange", handleRouting);
 // ===================== ACCOUNTS-JS =======================
 
 function saveAccount(){
+    document.getElementById('account-label-pass').classList.remove('hide-msg')
     const verifiedField = document.getElementById('verified-field');
     const inputs = accountsForm.querySelectorAll('input');
     const check = checkEmpty(inputs);
-    const element = document.getElementById('acc-email')
+    const element = document.getElementById('acc-email');
+    let status = true;
 
     if(!check){
         return;
@@ -389,6 +423,12 @@ function saveAccount(){
     const formData = new FormData(accountsForm)
     const data = Object.fromEntries(formData);
 
+    //validate email format
+    const validEmail = emailValidation(data.email.trim());
+    element.innerText = validEmail ? '' : 'Invalid email!'
+    console.log(validEmail)
+    status = validEmail
+
     //check if email exists already!
     const account = window.db.accounts.some(acc => acc.email == data.email.trim())
 
@@ -396,6 +436,12 @@ function saveAccount(){
         const element = document.getElementById('acc-email')
         element.textContent =  'Email already exists!';
         element.previousElementSibling.style.borderColor = 'red';
+        return;
+    }
+
+     //password validation
+    if(!passwordValidation(data.password)){
+        document.getElementById('account-pass-msg').textContent = 'Password must be 6 characters in length!'
         return;
     }
 
@@ -408,13 +454,11 @@ function saveAccount(){
     document.getElementById('form-message-div').classList.add('hide-msg');
 
     if(editing){
-
         //finds the index of the account being edited and updates the values;
         const emailExists = window.db.accounts.some(account => account.email == editingEmail)
 
         if(emailExists && data.email.trim() != editingEmail){
-            element.textContent =  'Email already exists!';
-            
+            element.textContent =  'Email already exists!'; 
             return;
         }else{
             element.innerText =  '';
@@ -432,13 +476,38 @@ function saveAccount(){
         data.userId = acc.userId + 1;
         window.db.accounts.push(data);
     }
+
+   
+
     document.getElementById('accounts-cancel-btn').click();
     saveToStorage();
     renderAccounts();
-    resetAccountModal();
+
+    if(editing){
+        showToast("Successfully saved changes!", true);
+    }else{
+        showToast("Successfully added new account!", true);
+    }
+
+    editing = false; 
+}
+
+function passwordValidation(password){
+    const length = 6;
+    if(password.length < length){
+        return false;
+    }else{
+        return true;
+    }
+}
+
+function emailValidation(email){
+    const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegEx.test(email);
 }
 
 function editAccount(email){
+    document.getElementById('account-label-pass').classList.add('hide-msg')
     editing = true;
     editingEmail = email;
     console.log(editingEmail)
@@ -456,7 +525,7 @@ function editAccount(email){
 function resetPassword(email){
     const newPassword = prompt("Enter this account's new password. Password length must be minimum of six characters")
 
-    if(password.length < 6){
+    if(passwordValidation()){
         resetPassword(email);
     }else{
         const index = window.db.accounts.findIndex(account => account.email == email)

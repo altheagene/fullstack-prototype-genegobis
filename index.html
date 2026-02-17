@@ -29,11 +29,11 @@
                 </ul>
         </div>
     </nav>
-    <main>
+    <main class="container">
        <div id="toast-el" role="toast" class="toast position-fixed p-2" data-bs-delay="3000">
         <div class="toast-body d-flex">
-            <div role="alert" id="toast-msg"></div>
-            <button type="button" class="btn-close btn-close-black me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            <div role="alert" id="toast-msg" class=" text-white fw-bold"></div>
+            <button type="button" class="btn-close btn-close-black me-2 m-auto text-white fw-bold" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
             
        </div>
@@ -60,22 +60,25 @@
             <h1>Register Account</h1>
             <form action="post" id="registration-form">
                 <label for="">First name
-                    <input name="firstName" type="text" required>
+                    <input name="firstName" type="text">
+                    <span></span>
                 </label>
 
                 <label>LastName
-                    <input type="text" name="lastName" class="form-input" required>
-                    
+                    <input type="text" name="lastName" class="form-input" >
+                    <span></span>
                 </label>
 
                 <label for="">Email
-                    <input name="email" type="email">
+                    <input name="email" type="text">
+                    <span id="email-error-msg" class="text-danger"></span>
                 </label>
 
                 <label>Password
-                    <input type="password" name="password" required>
+                    <input type="password" name="password" >
+                    <span id="pass-error-msg" class="text-danger"></span>
                 </label>
-                <p id="pass-error-msg" class="hide-msg">Password must be at least 6 characters long!</p>
+                <!-- <p id="pass-error-msg" class="hide-msg text-danger">Password must be at least 6 characters long!</p> -->
 
                 <div class="buttons-div">
                     <button type="submit" >Sign Up</button>
@@ -103,10 +106,12 @@
             </div>
             <form action="" id="login-form">
                 <label for="email">Email
-                    <input type="text"  name="email" required>
+                    <input type="text"  name="email">
+                    <span></span>
                 </label>
                 <label for="password">Password
-                    <input type="password"  name="password" required>
+                    <input type="password"  name="password">
+                    <span></span>
                 </label>
 
                 <div class="buttons-div">
@@ -131,21 +136,24 @@
         <section id="employees-page" class="page">
             <div class="page-header">
                 <h1>Employees</h1>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#employees-modal" onclick="resetInputs(employeesForm)">+ Add Employee</button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#employees-modal" id="employees-modal-btn">+ Add Employee</button>
             </div>
 
-            <table class="table table-striped">
-                <thead>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Dept</th>
-                    <th>Actions</th>
-                </thead>
-                <tbody  id="employees-tbody">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Dept</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody  id="employees-tbody">
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            
 
             <div class="modal" id="employees-modal">
                 <div class="modal-dialog">
@@ -161,17 +169,17 @@
                             
                             <form action="" id="employees-form">
                                 <label for="">Employee ID<span class="text-danger">*</span>
-                                    <input type="text" name="id" class="form-control" >
+                                    <input type="text" name="id">
                                     <span></span>
                                 </label>
 
                                 <label for="">User email <span class="text-danger">*</span>
-                                    <input type="email" name="email" class="form-control" >
+                                    <input type="email" name="email" >
                                     <span id="employee-email"></span>
                                 </label>
 
                                 <label for="">Position <span class="text-danger">*</span>
-                                    <input type="text" name="position" class="form-control" >
+                                    <input type="text" name="position">
                                     <span></span>
                                 </label>
 
@@ -183,7 +191,7 @@
                                 </label>
 
                                 <label for="">Hire Date <span class="text-danger">*</span>
-                                    <input type="date" name="hireDate" class="form-control">
+                                    <input type="date" name="hireDate">
                                     <span></span>
                                 </label>
                             </form>
@@ -191,7 +199,7 @@
 
                         <div class="modal-footer">
                             <div class="buttons-div">
-                                <button onclick="saveEmployee()">Save</button>
+                                <button id="save-employee">Save</button>
                                 <button data-bs-dismiss="modal" id="employee-cancel-btn" onclick="resetInputs(employeesForm)">Cancel</button>
                             </div>
                         </div>
@@ -207,36 +215,42 @@
                 <button class="btn btn-success" onclick="addDepartment()">+ Add Department</button>
             </div>
 
-            <table class="table table-striped">
-                <thead>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </thead>
-                <tbody id="dept-tbody">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody id="dept-tbody">
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            
         </section>
 
         <section id="accounts-page" class="role-logged-in page ">
             <div class="page-header">
                 <h1>Accounts</h1>
-                <button onclick="resetInputs(accountsForm)" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#accounts-modal" id="accounts-modal-btn">+ Add Account</button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#accounts-modal" id="accounts-modal-btn">+ Add Account</button>
             </div>
 
-            <table class="table table-striped">
-                <thead>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Verified</th>
-                    <th>Actions</th>
-                </thead>
-                <tbody id="accounts-tbody">
-                    
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Verified</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody id="accounts-tbody">
+                        
+                    </tbody>
+                </table>
+            </div>
+            
 
             <div class="modal" id="accounts-modal">
                 <div class="modal-dialog">
@@ -265,9 +279,9 @@
                                     <span id="acc-email"></span>
                                 </label>
 
-                                <label for="">Password <span class="text-danger">*</span>
+                                <label for="" id="account-label-pass">Password <span class="text-danger">*</span>
                                     <input type="password" name="password">
-                                    <span></span>
+                                    <span id="account-pass-msg"></span>
                                 </label>
 
                                 <label for="">Role <span class="text-danger">*</span>
@@ -286,7 +300,7 @@
 
                         <div class="modal-footer">
                             <div class="buttons-div">
-                                <button onclick="saveAccount()">Save</button>
+                                <button  id="save-account" >Save</button>
                                 <button data-bs-dismiss="modal" onclick="resetInputs(accountsForm)" id="accounts-cancel-btn">Cancel</button>
                             </div>
                         </div>
@@ -300,21 +314,24 @@
         <section id="requests-page" class="role-logged-in page">
             <div class="page-header">
                 <h1>My Requests</h1>
-                <button class="btn btn-success" data-bs-target="#request-modal" data-bs-toggle="modal" onclick="openRequestModal()">+ New Request</button>
+                <button class="btn btn-success" data-bs-target="#request-modal" data-bs-toggle="modal" id="requests-modal-btn">+ New Request</button>
             </div>
 
             <button>Create One</button>
-            <table class="table table-striped">
-                <thead>
-                    <th>User</th>
-                    <th>Type</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                </thead>
-                <tbody id="requests-tbody">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody id="requests-tbody">
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            
 
             <div class="modal" id="request-modal">
                 <div class="modal-dialog">
@@ -350,7 +367,7 @@
 
                         <div class="modal-footer">
                             <div class="buttons-div">
-                                <button onclick="saveItems()">Save</button>
+                                <button id="save-request">Save</button>
                                 <button data-bs-dismiss="modal" id="request-close-btn" onclick="hideMsg()">Cancel</button>
                             </div>
                         </div>
