@@ -20,6 +20,8 @@ const myEmployeeModal = new bootstrap.Modal(employeeModal);
 
 const accountsForm = document.getElementById('accounts-form');
 const employeesForm = document.getElementById('employees-form');
+const registrationForm = document.getElementById('registration-form');
+const loginForm = document.getElementById('login-form')
 
 let currentUser = null;
 window.location.hash = '#/'
@@ -98,9 +100,11 @@ function saveToStorage(){
 const qtyInputs = document.querySelectorAll('.itemQty')
 
 qtyInputs.forEach(input => {
-    if (input.value <= 0){
-        input.value = 1
-    }
+    input.addEventListener('input', () => {
+        if (parseInt(input.value) <= 0){
+            input.value = 1
+        }
+    })
 });
 
 document.getElementById('registration-form')
@@ -122,6 +126,23 @@ document.getElementById('login-form').addEventListener('submit', function(e){
 
 function navigateTo(hash){
     window.location.hash = hash
+}
+
+const toastEl = document.getElementById('toast-el');
+const toastMsg = document.getElementById('toast-msg');
+const myToast = new bootstrap.Toast(toastEl);
+
+function showToast(message, boolValue){
+    toastMsg.innerText = message
+    
+    if(boolValue){
+        toastEl.classList.remove('bg-danger')
+        toastEl.classList.add('bg-success')
+    }else{
+        toastEl.classList.remove('bg-success')
+        toastEl.classList.add('bg-danger')
+    }
+    myToast.show()
 }
 
 function handleRouting(){
@@ -174,11 +195,11 @@ function checkEmpty(inputs){
         if(input.type != 'checkbox' && value == ''){
             input.style.borderColor = 'red'
             input.nextElementSibling.style.color = 'red'
-            input.nextElementSibling.textContent = 'This field is required'
+            input.nextElementSibling.innerText = 'This field is required'
             filled = false
         }else{
             input.style.borderColor = 'gray'
-            input.nextElementSibling.textContent = ''
+            input.nextElementSibling.innerText = ''
         }
     }
 
@@ -190,6 +211,7 @@ function checkEmpty(inputs){
 function setAuthState(isAuth, user){
     currentUser = user;
     if(isAuth){
+        document.getElementById('role').textContent = currentUser.firstName;
         body.classList.remove('not-authenticated');
         body.classList.add('authenticated');
         document.getElementById('role').textContent = currentUser.firstName
@@ -211,33 +233,50 @@ function setAuthState(isAuth, user){
 
 // =================== LOGIN, LOGOUT, REGITRATION =================
 function handleRegistration(data){
+    const passwordErrMsg = document.getElementById('pass-error-msg');
+    const emailErrMsg = document.getElementById('email-error-msg')
+    const check = checkEmpty(registrationForm.querySelectorAll('input'))
+    let status = true;
 
-    const valid = checkEmptyFields();
-    if(!valid){
-        //please fill out all fields
+    if(!check){
         return;
     }
 
     const password = data.password;
     const email = data.email.trim();
 
+     //check validity and uniqueness of email
+    const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    const match = emailRegEx.test(email);
+    console.log(match)
+    
+    emailErrMsg.innerText = match ? ' ' : 'Invalid email!'
+    
+    if(!match){
+        status = false;
+    }else{
+        //check if email exists already
+        const emailExists = window.db.accounts.some(acc => acc.email == email)
+        emailErrMsg.innerText = emailExists ? 'There is already an account with this email!' : ''
+    }
+
+    
+
     //check password length
     if(password.length < 6){
         //show error message the password must be 6 characters long
-        document.getElementById('pass-error-msg').classList.remove('hide-msg');
+        console.log(password.length)
+        passwordErrMsg.innerText = 'Password must be atleast six(6) characters in length';
+        status = false;
         return;
     }else{
-         document.getElementById('pass-error-msg').classList.add('hide-msg');
+        passwordErrMsg.classList.add('hide-msg');
     }
 
-    //check validity and uniqueness of email
-    const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    const match = emailRegEx.test(email);
-
-    if(!match)
+    if(!status){
         return;
-
-    //additional user-data
+    }
+    //additional user-data & trim text fields
     data.verified = false;
     data.role = 'user'
     data.email = data.email.trim();
@@ -248,10 +287,8 @@ function handleRegistration(data){
     const acc = window.db.accounts[window.db.accounts.length-1];
     data.userId = acc.userId + 1;
 
-    localStorage.setItem('unverified_email', email);
-    console.log(window.db.accounts)
+    localStorage.setItem('unverified_email', email);   
     window.db.accounts.push(data);
-    console.log(window.db.accounts)
     saveToStorage()
     navigateTo('#/verify-email');
 }
@@ -266,6 +303,13 @@ function handleVerification(){
 }
 
 function handleLogin(data){
+
+    const inputs = loginForm.querySelectorAll('input');
+    const check = checkEmpty(inputs)
+    if(!check){
+        return;
+    }
+
     console.log(data)
     console.log(window.db.accounts)
     const user = window.db.accounts.find(account => account.email == data.email.trim() 
@@ -275,11 +319,9 @@ function handleLogin(data){
     if(user){
         localStorage.auth_token = user.email;
         setAuthState(true, user)
-        document.getElementById('login-invalid').classList.add('hide-msg')
-        showToast('Logged in successfully!')
-    }else{
-        document.getElementById('login-invalid').classList.remove('hide-msg');
-        showToast('Invalid credentials!')
+        showToast('Logged in successfully!', true)
+    }else{  
+        showToast('Invalid credentials!',false)
     }
     
 }
@@ -355,14 +397,6 @@ function saveAccount(){
         element.textContent =  'Email already exists!';
         element.previousElementSibling.style.borderColor = 'red';
         return;
-    }
-
-    for (let key of Object.keys(data)){
-        if(data[key].trim() === '' && key != 'password'){
-            console.log('WOW')
-            document.getElementById('form-message-div').classList.remove('hide-msg')
-            return;
-        }
     }
 
     if(verifiedField.checked){
@@ -557,7 +591,8 @@ function renderEmployees(){
         `;
 
         tbody.innerHTML = element;
-
+        return;
+        
     }
     for(let employee of window.db.employees){
         const user = window.db.accounts.find(acc => acc.userId == employee.userId);
@@ -596,7 +631,7 @@ function renderRequests(){
 
     const tbody = document.getElementById('requests-tbody');
     tbody.innerHTML = ''
-    
+
     if(window.db.requests.length == 0){
         const element = `
             <tr>
@@ -696,7 +731,6 @@ function saveItems(){
         if(item == '' || qty == ''){
            msgDdiv.classList.remove('hide-msg')
            msgDdiv.innerText = 'Please fill out all fields!'
-           console.log('MISSING')
             return;
         }
 
