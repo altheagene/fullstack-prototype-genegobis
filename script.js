@@ -160,9 +160,7 @@ let itemRequests = [];
 
 loadFromStorage();
 
-function loadFromStorage(){
-    console.log(localStorage[STORAGE_KEY]);
-    
+function loadFromStorage(){    
     if (localStorage[STORAGE_KEY] == undefined){
         window.db.departments.push(
             {
@@ -189,7 +187,6 @@ function loadFromStorage(){
     }else{
        
         const data = JSON.parse(localStorage[STORAGE_KEY])
-        console.log('HELLO')
         window.db.accounts = data.accounts;
         window.db.departments = data.departments;
         window.db.employees = data.employees;
@@ -200,7 +197,6 @@ function loadFromStorage(){
         currentUser = window.db.accounts.find(account => account.email == localStorage.auth_token);
         body.classList.remove('not-authenticated')
         body.classList.add('authenticated')
-        console.log(currentUser)
         document.getElementById('role').textContent = currentUser.firstName;
         if(currentUser.role == 'admin'){
             body.classList.add('is-admin')
@@ -268,7 +264,6 @@ function showToast(message, boolValue){
 function handleRouting(){
     const hash = window.location.hash;
     currentPage.classList.remove('active');
-    console.log('HIE HOW ARE YA')
 
     switch (hash){
         case '#/': currentPage = homePage;break;
@@ -315,7 +310,6 @@ function checkEmpty(inputs){
     let filled = true;
     for(let input of inputs){
         const value = input.type == 'password' ? input.value : input.value.trim();
-        console.log(value)
         if(input.type != 'checkbox' && value == ''){
             input.style.borderColor = 'red'
             input.nextElementSibling.style.color = 'red'
@@ -371,7 +365,6 @@ function handleRegistration(data){
      //check validity and uniqueness of email
     const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     const match = emailRegEx.test(email);
-    console.log(match)
     
     emailErrMsg.innerText = match ? ' ' : 'Invalid email!'
     
@@ -418,7 +411,6 @@ function handleRegistration(data){
 function handleVerification(){
     const unverifiedEmail = localStorage.getItem('unverified_email');
     const emailVerifiedMsg = document.getElementById('email-verified-msg')
-    console.log(window.db.accounts)
     let index = window.db.accounts.findIndex((account) => account.email == unverifiedEmail)
     window.db.accounts[index].verified = true
     saveToStorage();
@@ -439,7 +431,6 @@ function handleLogin(data){
     const user = window.db.accounts.find(account => account.email == data.email.trim() 
                                                         && account.password == data.password
                                                         && account.verified)
-    console.log(user)
     if(user){
         localStorage.auth_token = user.email;
         setAuthState(true, user)
@@ -458,7 +449,6 @@ function handleLogout(){
 }
 
 function renderProfile(){
-    console.log('HELLO!')
     document.getElementById('first-name').innerText = currentUser.firstName;
     document.getElementById('last-name').innerText = currentUser.lastName
     document.getElementById('profile-email').innerText = currentUser.email;
@@ -526,7 +516,6 @@ function saveAccount(){
     //validate email format
     const validEmail = emailValidation(data.email.trim());
     element.innerText = validEmail ? '' : 'Invalid email!'
-    console.log(validEmail)
     status = validEmail
 
     //check if email exists already!
@@ -610,7 +599,7 @@ function editAccount(email){
     document.getElementById('account-label-pass').classList.add('hide-msg')
     editing = true;
     editingEmail = email;
-    console.log(editingEmail)
+
     const user = window.db.accounts.find(account => account.email == email);
     accountsForm.elements['firstName'].value = user.firstName;
     accountsForm.elements['lastName'].value = user.lastName;
@@ -653,9 +642,8 @@ function deleteAccount(email){
 function renderAccounts(){
     const tbody = document.getElementById('accounts-tbody');
     tbody.innerHTML = ''
-    console.log(window.db.accounts)
+
     for (let account of window.db.accounts){
-        console.log(account)
         const element = `
             <tr>
                 <td>${account.firstName} ${account.lastName}</td>
@@ -719,7 +707,7 @@ function saveEmployee(){
         window.db.employees[employeeExists].email = data.email;
         window.db.employees[employeeExists].position = data.position
     }
-    console.log(data)
+
     saveToStorage();
     document.getElementById('employee-cancel-btn').click();
     renderEmployees(employeesForm);
@@ -734,9 +722,8 @@ function saveEmployee(){
 
 function editEmployee(id){
     editing = true;
-    console.log(id)
+
     const employee = window.db.employees.find(emp => emp.userId == id);
-    console.log(employee)
     const department = window.db.departments.find(dept => dept.deptId == employee.deptId)
     employeesForm.elements['id'].value = employee.id;
     employeesForm.elements['email'].value = employee.email;
@@ -853,22 +840,21 @@ function openRequestModal(){
             qty: 1,
         }
     ]
-
-    renderItems();
 }
 
 function addNewItem(){
     const itemRequestsDiv = document.getElementById('item-requests-div');
     const id = itemRequests.length;
-    const element = `
-            <div class="item-div" id="${id + 1}">
-                <input type="text" class="itemName" placeholder="Item Name">
-                <input type="number" min="1" class="itemQty" placeholder="Qty">
-                <button type="button" class="btn btn-danger" onclick="deleteItem(${id + 1})">x</button>
-            </div>
+    const div = document.createElement('div')
+    div.innerHTML = `
+        <div class="item-div" id="${id + 1}">
+            <input type="text" class="itemName" placeholder="Item Name">
+            <input type="number" min="1" class="itemQty" placeholder="Qty">
+            <button type="button" class="btn btn-danger" onclick="deleteItem(${id + 1})">x</button>
+        </div>
     `
 
-    itemRequestsDiv.appendChild(element);
+    itemRequestsDiv.appendChild(div);
     itemRequests.push({})
     
 }
@@ -945,6 +931,9 @@ function saveItems(){
     saveToStorage();
     document.getElementById('request-close-btn').click();
     renderRequests();
+    const inputs = requestsPage.querySelectorAll('input')
+    resetInputs(requestsPage);
+    itemRequests = []
 }
 
 // ================ DEPARTMENTS-JS ===========================
