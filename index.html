@@ -131,7 +131,7 @@
         <section id="employees-page" class="page">
             <div class="page-header">
                 <h1>Employees</h1>
-                <button class="btn btn-success" data-bs-toggle="modal"  data-bs-target="#employees-form-modal">+ Add Employee</button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#employees-modal" onclick="resetInputs(employeesForm)">+ Add Employee</button>
             </div>
 
             <table class="table table-striped">
@@ -147,7 +147,7 @@
                 </tbody>
             </table>
 
-            <div class="modal" id="employees-form-modal">
+            <div class="modal" id="employees-modal">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -176,7 +176,7 @@
                                 </label>
 
                                 <label for="">Department <span class="text-danger">*</span>
-                                    <select name="department">
+                                    <select name="deptId">
                                         
                                     </select>
                                     <span></span>
@@ -222,7 +222,7 @@
         <section id="accounts-page" class="role-logged-in page ">
             <div class="page-header">
                 <h1>Accounts</h1>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#accounts-modal" id="accounts-modal-btn">+ Add Account</button>
+                <button onclick="resetInputs(accountsForm)" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#accounts-modal" id="accounts-modal-btn">+ Add Account</button>
             </div>
 
             <table class="table table-striped">
@@ -320,7 +320,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">New Request</h1>
+                            <h1 class="modal-title fs-5" id="exampleModalLabel" onclick="hideMsg()">New Request</h1>
                         </div>
 
                         <div class="modal-body">
@@ -351,7 +351,7 @@
                         <div class="modal-footer">
                             <div class="buttons-div">
                                 <button onclick="saveItems()">Save</button>
-                                <button data-bs-dismiss="modal" id="request-close-btn">Cancel</button>
+                                <button data-bs-dismiss="modal" id="request-close-btn" onclick="hideMsg()">Cancel</button>
                             </div>
                         </div>
                     </div>
