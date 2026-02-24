@@ -373,7 +373,11 @@ function handleRegistration(data){
     }else{
         //check if email exists already
         const emailExists = window.db.accounts.some(acc => acc.email == email)
+        console.log(emailExists)
         emailErrMsg.innerText = emailExists ? 'There is already an account with this email!' : ''
+        if(emailExists){
+            status = false;
+        }
     }
 
     
